@@ -1,5 +1,6 @@
 package ibs.news.service.impl;
 
+import ibs.news.dto.request.LoginUserRequest;
 import ibs.news.dto.request.RegisterUserRequest;
 import ibs.news.dto.response.LoginUserResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
@@ -12,8 +13,11 @@ import ibs.news.security.JwtProvider;
 import ibs.news.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +38,24 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user = authRepo.save(user);
 
-        String token = jwtProvider.generateToken(user.getEmail());
+        LoginUserResponse response = userMapper.toDto(user);
+        response.setToken(jwtProvider.generateToken(user.getEmail()));
+
+        return new CustomSuccessResponse<>(response);
+    }
+
+    @Override
+    public  CustomSuccessResponse<LoginUserResponse> loginService(LoginUserRequest dto) {
+
+        UserEntity user = authRepo.findByEmail(dto.getEmail()).orElseThrow(
+                () -> new CustomException(ErrorCodes.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new CustomException(ErrorCodes.PASSWORD_NOT_VALID, HttpStatus.BAD_REQUEST);
+        }
 
         LoginUserResponse response = userMapper.toDto(user);
-        response.setToken(token);
+        response.setToken(jwtProvider.generateToken(user.getEmail()));
 
         return new CustomSuccessResponse<>(response);
     }
