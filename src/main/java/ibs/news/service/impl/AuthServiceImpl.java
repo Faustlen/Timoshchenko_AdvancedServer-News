@@ -1,5 +1,6 @@
 package ibs.news.service.impl;
 
+import ibs.news.dto.request.AuthUserRequest;
 import ibs.news.dto.request.RegisterUserRequest;
 import ibs.news.dto.response.LoginUserResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
@@ -9,6 +10,8 @@ import ibs.news.error.ErrorCodes;
 import ibs.news.mapper.UserMapper;
 import ibs.news.repository.AuthRepository;
 import ibs.news.security.JwtProvider;
+import ibs.news.security.UserDetailsServiceImpl;
+import ibs.news.security.UserEntityDetails;
 import ibs.news.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Override
     public CustomSuccessResponse<LoginUserResponse> registerService(RegisterUserRequest dto) {
@@ -34,10 +38,23 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user = authRepo.save(user);
 
-        String token = jwtProvider.generateToken(user.getEmail());
-
         LoginUserResponse response = userMapper.toDto(user);
-        response.setToken(token);
+        response.setToken(jwtProvider.generateToken(user.getEmail()));
+
+        return new CustomSuccessResponse<>(response);
+    }
+
+    @Override
+    public  CustomSuccessResponse<LoginUserResponse> loginService(AuthUserRequest dto) {
+
+        UserEntityDetails userDetails = userDetailsService.loadUserByUsername(dto.getEmail());
+
+        if (!passwordEncoder.matches(dto.getPassword(), userDetails.getPassword())) {
+            throw new CustomException(ErrorCodes.PASSWORD_NOT_VALID, HttpStatus.BAD_REQUEST);
+        }
+
+        LoginUserResponse response = userMapper.toDto(userDetails.getUserEntity());
+        response.setToken(jwtProvider.generateToken(userDetails.getUsername()));
 
         return new CustomSuccessResponse<>(response);
     }

@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 public class RegisterUserRequest {
 
     @NotBlank(message = ValidationConstants.USER_NAME_HAS_TO_BE_PRESENT)
