@@ -1,14 +1,12 @@
 package ibs.news.controller;
 
-import ibs.news.dto.request.LoginUserRequest;
+import ibs.news.dto.request.AuthUserRequest;
 import ibs.news.dto.request.RegisterUserRequest;
 import ibs.news.dto.response.LoginUserResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
-import ibs.news.security.UserDetailsService;
 import ibs.news.service.impl.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public CustomSuccessResponse<LoginUserResponse> loginController(@RequestBody @Valid LoginUserRequest dto) {
+    public CustomSuccessResponse<LoginUserResponse> loginController(@RequestBody @Valid AuthUserRequest dto) {
 
         return authService.loginService(dto);
     }
