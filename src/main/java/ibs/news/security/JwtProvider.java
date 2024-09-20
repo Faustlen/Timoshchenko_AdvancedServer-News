@@ -23,7 +23,7 @@ public class JwtProvider {
 
     public String generateToken(String mail) {
 
-        return Jwts.builder()
+        return "Bearer " + Jwts.builder()
                 .subject(mail)
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + validityInMilliseconds))

@@ -7,8 +7,8 @@ import ibs.news.dto.response.common.CustomSuccessResponse;
 import ibs.news.entity.UserEntity;
 import ibs.news.error.CustomException;
 import ibs.news.error.ErrorCodes;
-import ibs.news.mapper.UserMapper;
-import ibs.news.repository.AuthRepository;
+import ibs.news.mapper.AuthMapper;
+import ibs.news.repository.UserRepository;
 import ibs.news.security.JwtProvider;
 import ibs.news.security.UserDetailsServiceImpl;
 import ibs.news.security.UserEntityDetails;
@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final AuthRepository authRepo;
-    private final UserMapper userMapper;
+    private final UserRepository authRepo;
+    private final AuthMapper authMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final UserDetailsServiceImpl userDetailsService;
@@ -34,11 +34,11 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(ErrorCodes.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
-        UserEntity user = userMapper.toEntity(dto);
+        UserEntity user = authMapper.toEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user = authRepo.save(user);
 
-        LoginUserResponse response = userMapper.toDto(user);
+        LoginUserResponse response = authMapper.toDto(user);
         response.setToken(jwtProvider.generateToken(user.getEmail()));
 
         return new CustomSuccessResponse<>(response);
@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(ErrorCodes.PASSWORD_NOT_VALID, HttpStatus.BAD_REQUEST);
         }
 
-        LoginUserResponse response = userMapper.toDto(userDetails.getUserEntity());
+        LoginUserResponse response = authMapper.toDto(userDetails.getUserEntity());
         response.setToken(jwtProvider.generateToken(userDetails.getUsername()));
 
         return new CustomSuccessResponse<>(response);

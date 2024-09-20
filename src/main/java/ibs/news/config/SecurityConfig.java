@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers("v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "v1/user").permitAll()
                         .requestMatchers(HttpMethod.PUT, "v1/user").authenticated()
+                        .requestMatchers("v1/user/info").authenticated()
+                        .requestMatchers("v1/user/{id}").authenticated()
                 )
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

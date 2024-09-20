@@ -1,10 +1,13 @@
 package ibs.news.security;
 
+import ibs.news.error.CustomException;
+import ibs.news.error.ErrorCodes;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -36,6 +39,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         userDetails, null, userDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                throw new CustomException(ErrorCodes.TOKEN_NOT_PROVIDED, HttpStatus.UNAUTHORIZED);
             }
         }
 
