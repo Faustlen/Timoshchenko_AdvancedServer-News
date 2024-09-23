@@ -1,5 +1,6 @@
 package ibs.news.service.impl;
 
+import ibs.news.dto.request.UserNewDataRequest;
 import ibs.news.dto.response.PublicUserView;
 import ibs.news.dto.response.common.CustomSuccessResponse;
 import ibs.news.entity.UserEntity;
@@ -58,4 +59,27 @@ public class UserServiceImpl implements UserService {
 
         return new CustomSuccessResponse<>(response);
     }
+
+    @Override
+    public CustomSuccessResponse<PublicUserView> replaceUserService(UserNewDataRequest dto) {
+
+        if (userRepo.existsByEmail(dto.getEmail())) {
+            throw new CustomException(ErrorCodes.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+        }
+
+        var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UserEntity user = userRepo.findByEmail(userDetails.getUsername()).orElseThrow(
+                () -> new CustomException(ErrorCodes.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+
+        user = userMapper.toEntity(dto, user);
+        user = userRepo.save(user);
+
+        return new CustomSuccessResponse<>(userMapper.toViewDto(user));
+    }
+
+//    @Override
+//    public BaseSuccessResponse deleteUserService() {
+//        return null;
+//    }
 }
