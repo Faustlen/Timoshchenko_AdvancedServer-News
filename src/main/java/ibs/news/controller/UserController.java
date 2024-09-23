@@ -1,16 +1,19 @@
 package ibs.news.controller;
 
 import ibs.news.constrants.ValidationConstants;
+import ibs.news.dto.request.UserNewDataRequest;
 import ibs.news.dto.response.PublicUserView;
 import ibs.news.dto.response.common.CustomSuccessResponse;
+import ibs.news.repository.UserRepository;
 import ibs.news.service.impl.UserServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +26,8 @@ import java.util.List;
 public class UserController {
 
     private final UserServiceImpl userService;
+
+    private final UserRepository userRepo;
 
     @GetMapping
     public CustomSuccessResponse<List<PublicUserView>> getAllUsersController() {
@@ -44,14 +49,14 @@ public class UserController {
     }
 
     @PutMapping
-    public CustomSuccessResponse<?> replaceUserController() {
+    public CustomSuccessResponse<PublicUserView> replaceUserController(@RequestBody @Valid UserNewDataRequest dto) {
 
-        return null;
+        return userService.replaceUserService(dto);
     }
 
-    @DeleteMapping
-    public CustomSuccessResponse<?> deleteUserController() {
-
-        return null;
-    }
+//    @DeleteMapping
+//    public BaseSuccessResponse deleteUserController() {
+//
+//        return userService.deleteUserService();
+//    }
 }

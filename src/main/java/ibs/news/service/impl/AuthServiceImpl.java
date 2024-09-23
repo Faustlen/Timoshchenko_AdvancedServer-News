@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UserRepository authRepo;
+    private final UserRepository userRepo;
 
     private final AuthMapper authMapper;
 
@@ -34,13 +34,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public CustomSuccessResponse<LoginUserResponse> registerService(RegisterUserRequest dto) {
-        if (authRepo.existsByEmail(dto.getEmail())) {
+        if (userRepo.existsByEmail(dto.getEmail())) {
             throw new CustomException(ErrorCodes.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
         UserEntity user = authMapper.toEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user = authRepo.save(user);
+        user = userRepo.save(user);
 
         LoginUserResponse response = authMapper.toDto(user);
         response.setToken(jwtProvider.generateToken(user.getEmail()));
