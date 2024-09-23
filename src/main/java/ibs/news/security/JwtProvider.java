@@ -1,6 +1,5 @@
 package ibs.news.security;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
-
 
 @Component
 public class JwtProvider {
@@ -23,7 +21,7 @@ public class JwtProvider {
 
     public String generateToken(String mail) {
 
-        return Jwts.builder()
+        return "Bearer " + Jwts.builder()
                 .subject(mail)
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + validityInMilliseconds))
@@ -38,25 +36,19 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(getSignInKey())
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        Jwts.parser()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseSignedClaims(token);
+        return true;
     }
 
     public String getEmailFromToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(getSignInKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
         return claims.getSubject();
     }
-
-
 }

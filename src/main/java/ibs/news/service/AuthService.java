@@ -7,7 +7,7 @@ import ibs.news.dto.response.common.CustomSuccessResponse;
 
 public interface AuthService {
 
-    public CustomSuccessResponse<LoginUserResponse> registerService(RegisterUserRequest dto);
+    CustomSuccessResponse<LoginUserResponse> registerService(RegisterUserRequest dto);
 
-    public CustomSuccessResponse<LoginUserResponse> loginService(AuthUserRequest dto);
+    CustomSuccessResponse<LoginUserResponse> loginService(AuthUserRequest dto);
 }

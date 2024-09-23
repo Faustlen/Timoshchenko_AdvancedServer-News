@@ -8,7 +8,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginUserResponse {
+public class PublicUserView {
 
     private UUID id;
 
@@ -19,6 +19,4 @@ public class LoginUserResponse {
     private String role;
 
     private String avatar;
-
-    private String token;
 }

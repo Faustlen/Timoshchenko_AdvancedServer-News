@@ -17,7 +17,7 @@ public enum ErrorCodes {
     MUST_NOT_BE_NULL(4, "must not be null"),
     USER_NOT_FOUND(5, "Could not find user"),
     TOKEN_NOT_PROVIDED(6, ValidationConstants.TOKEN_NOT_PROVIDED),
-    UNAUTHORISED(7, "unauthorised"),
+    UNAUTHORISED(7, ValidationConstants.UNAUTHORISED),
     USER_EMAIL_NOT_NULL(8, ValidationConstants.USER_EMAIL_NOT_NULL),
     USER_PASSWORD_NOT_VALID(9, ValidationConstants.USER_PASSWORD_NOT_VALID),
     USER_ROLE_NOT_NULL(10, ValidationConstants.USER_ROLE_NOT_NULL),
