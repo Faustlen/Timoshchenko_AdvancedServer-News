@@ -16,7 +16,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository authRepo;
 
-
     @Override
     public UserEntityDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 

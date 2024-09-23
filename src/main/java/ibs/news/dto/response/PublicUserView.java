@@ -9,9 +9,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PublicUserView {
+
     private UUID id;
+
     private String name;
+
     private String email;
+
     private String role;
+
     private String avatar;
 }

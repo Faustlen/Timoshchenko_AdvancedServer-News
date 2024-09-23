@@ -23,9 +23,13 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository authRepo;
+
     private final AuthMapper authMapper;
+
     private final PasswordEncoder passwordEncoder;
+
     private final JwtProvider jwtProvider;
+
     private final UserDetailsServiceImpl userDetailsService;
 
     @Override
@@ -45,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public  CustomSuccessResponse<LoginUserResponse> loginService(AuthUserRequest dto) {
+    public CustomSuccessResponse<LoginUserResponse> loginService(AuthUserRequest dto) {
 
         UserEntityDetails userDetails = userDetailsService.loadUserByUsername(dto.getEmail());
 

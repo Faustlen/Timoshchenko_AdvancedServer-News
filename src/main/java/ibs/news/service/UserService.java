@@ -3,11 +3,13 @@ package ibs.news.service;
 import ibs.news.dto.response.PublicUserView;
 import ibs.news.dto.response.common.CustomSuccessResponse;
 
+import java.util.List;
+
 public interface UserService {
 
-    public CustomSuccessResponse<?> getAllUsersService();
+    CustomSuccessResponse<List<PublicUserView>> getAllUsersService();
 
-    public CustomSuccessResponse<PublicUserView> getUserInfoService();
+    CustomSuccessResponse<PublicUserView> getUserInfoService();
 
-    public CustomSuccessResponse<?> getUserInfoByIdService(String id);
+    CustomSuccessResponse<PublicUserView> getUserInfoByIdService(String id);
 }

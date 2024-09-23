@@ -7,7 +7,14 @@ import ibs.news.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,10 +25,11 @@ public class UserController {
     private final UserServiceImpl userService;
 
     @GetMapping
-    public CustomSuccessResponse<?> getAllUsersController() {
+    public CustomSuccessResponse<List<PublicUserView>> getAllUsersController() {
 
-        return null;
+        return userService.getAllUsersService();
     }
+
     @GetMapping("/info")
     public CustomSuccessResponse<PublicUserView> getUserInfoController() {
 
@@ -29,9 +37,10 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public CustomSuccessResponse<?> getUserInfoByIdController(@PathVariable @UUID(message = ValidationConstants.MAX_UPLOAD_SIZE_EXCEEDED) String id) {
+    public CustomSuccessResponse<PublicUserView> getUserInfoByIdController(
+            @PathVariable @UUID(message = ValidationConstants.MAX_UPLOAD_SIZE_EXCEEDED) String id) {
 
-        return null;
+        return userService.getUserInfoByIdService(id);
     }
 
     @PutMapping
