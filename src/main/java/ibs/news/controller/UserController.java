@@ -3,6 +3,7 @@ package ibs.news.controller;
 import ibs.news.constrants.ValidationConstants;
 import ibs.news.dto.request.UserNewDataRequest;
 import ibs.news.dto.response.PublicUserView;
+import ibs.news.dto.response.common.BaseSuccessResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
 import ibs.news.repository.UserRepository;
 import ibs.news.service.impl.UserServiceImpl;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -54,9 +56,11 @@ public class UserController {
         return userService.replaceUserService(dto);
     }
 
-//    @DeleteMapping
-//    public BaseSuccessResponse deleteUserController() {
-//
-//        return userService.deleteUserService();
-//    }
+    @DeleteMapping
+    public BaseSuccessResponse deleteUserController() {
+
+        userService.deleteUserService();
+
+        return new BaseSuccessResponse();
+    }
 }

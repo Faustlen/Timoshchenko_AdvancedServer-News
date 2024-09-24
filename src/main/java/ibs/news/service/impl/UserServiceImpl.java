@@ -69,8 +69,7 @@ public class UserServiceImpl implements UserService {
 
         var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        UserEntity user = userRepo.findByEmail(userDetails.getUsername()).orElseThrow(
-                () -> new CustomException(ErrorCodes.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        UserEntity user = userDetails.getUserEntity();
 
         user = userMapper.toEntity(dto, user);
         user = userRepo.save(user);
@@ -78,8 +77,11 @@ public class UserServiceImpl implements UserService {
         return new CustomSuccessResponse<>(userMapper.toViewDto(user));
     }
 
-//    @Override
-//    public BaseSuccessResponse deleteUserService() {
-//        return null;
-//    }
+    @Override
+    public void deleteUserService() {
+
+        var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        userRepo.deleteById(userDetails.getId());
+    }
 }
