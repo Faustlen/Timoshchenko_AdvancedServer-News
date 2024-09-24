@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -23,9 +22,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    UserMapper userMapper;
+    private final UserMapper userMapper;
 
-    UserRepository userRepo;
+    private final UserRepository userRepo;
 
     @Override
     public CustomSuccessResponse<List<PublicUserView>> getAllUsersService() {
