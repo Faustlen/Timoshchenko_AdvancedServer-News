@@ -16,5 +16,5 @@ public interface UserService {
 
     CustomSuccessResponse<PublicUserView> replaceUserService(UserNewDataRequest dto);
 
-//    BaseSuccessResponse deleteUserService();
+    void deleteUserService();
 }
