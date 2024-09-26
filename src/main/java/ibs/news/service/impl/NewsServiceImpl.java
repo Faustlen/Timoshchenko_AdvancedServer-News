@@ -2,6 +2,9 @@ package ibs.news.service.impl;
 
 import ibs.news.dto.request.CreateNewsRequest;
 import ibs.news.dto.response.CreateNewsSuccessResponse;
+import ibs.news.dto.response.GetNewsOutResponse;
+import ibs.news.dto.response.common.CustomSuccessResponse;
+import ibs.news.dto.response.common.PageableResponse;
 import ibs.news.entity.NewsEntity;
 import ibs.news.entity.TagEntity;
 import ibs.news.mapper.NewsMapper;
@@ -9,8 +12,12 @@ import ibs.news.repository.NewsRepository;
 import ibs.news.security.UserEntityDetails;
 import ibs.news.service.NewsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -39,7 +46,17 @@ public class NewsServiceImpl implements NewsService {
         return new CreateNewsSuccessResponse(news.getId());
     }
 
-    public void doSomething() {
+    @Override
+    public CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> getNewsService(
+            Integer page, Integer perPage) {
 
+        Page<NewsEntity> pagedNews;
+        pagedNews = newsRepo.findAll(PageRequest.of(page, perPage, Sort.by("id").descending()));
+
+        List<GetNewsOutResponse> newsList = newsMapper.toDto(pagedNews.getContent());
+
+        var response = new PageableResponse<>(newsList, newsRepo.count());
+
+        return new CustomSuccessResponse<>(response);
     }
 }
