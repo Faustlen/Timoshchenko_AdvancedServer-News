@@ -5,7 +5,6 @@ import ibs.news.dto.request.UserNewDataRequest;
 import ibs.news.dto.response.PublicUserView;
 import ibs.news.dto.response.common.BaseSuccessResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
-import ibs.news.repository.UserRepository;
 import ibs.news.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +27,6 @@ import java.util.List;
 public class UserController {
 
     private final UserServiceImpl userService;
-
-    private final UserRepository userRepo;
 
     @GetMapping
     public CustomSuccessResponse<List<PublicUserView>> getAllUsersController() {

@@ -3,7 +3,6 @@ package ibs.news.repository;
 import ibs.news.entity.UserEntity;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 import java.util.UUID;
 
