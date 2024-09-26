@@ -1,10 +1,14 @@
 package ibs.news.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -31,7 +35,4 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String avatar;
-
-    @OneToMany(mappedBy = "userId")
-    private Set<NewsEntity> newsId;
 }

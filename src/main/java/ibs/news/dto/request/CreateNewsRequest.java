@@ -15,13 +15,12 @@ public class CreateNewsRequest {
     private String title;
 
     @NotBlank(message = ValidationConstants.NEWS_DESCRIPTION_HAS_TO_BE_PRESENT)
-    @Size(min =3, max = 160, message = ValidationConstants.NEWS_DESCRIPTION_SIZE_NOT_VALID)
+    @Size(min = 3, max = 160, message = ValidationConstants.NEWS_DESCRIPTION_SIZE_NOT_VALID)
     private String description;
 
     @NotBlank(message = ValidationConstants.NEWS_IMAGE_HAS_TO_BE_PRESENT)
-    @Size(min =3, max = 160, message = ValidationConstants.NEWS_IMAGE_LENGTH)
+    @Size(min = 3, max = 160, message = ValidationConstants.NEWS_IMAGE_LENGTH)
     private String image;
 
-    private Set<String> tags;
-
+    private Set<@NotBlank(message = ValidationConstants.TAGS_NOT_VALID) String> tags;
 }

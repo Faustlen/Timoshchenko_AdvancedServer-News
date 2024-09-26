@@ -1,12 +1,10 @@
 package ibs.news.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
 public class CreateNewsSuccessResponse {
 
     private Long id;
@@ -14,5 +12,9 @@ public class CreateNewsSuccessResponse {
     private Boolean success = true;
 
     private Integer statusCode = 1;
+
+    public CreateNewsSuccessResponse(Long id) {
+        this.id = id;
+    }
 
 }

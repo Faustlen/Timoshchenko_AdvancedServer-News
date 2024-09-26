@@ -1,10 +1,13 @@
 package ibs.news.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -13,12 +16,13 @@ import java.util.Set;
 public class TagEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(unique = true)
     private String title;
 
-    @ManyToMany(mappedBy = "tags")
-    private Set<NewsEntity> news;
+    public TagEntity(String title) {
+        this.title = title;
+    }
 }

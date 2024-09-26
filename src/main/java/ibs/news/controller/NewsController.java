@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class NewsController {
 
-    NewsServiceImpl newsService;
+    private final NewsServiceImpl newsService;
 
     @PostMapping
     public CreateNewsSuccessResponse createNews(@RequestBody @Valid CreateNewsRequest dto) {
