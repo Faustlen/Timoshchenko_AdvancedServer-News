@@ -6,6 +6,7 @@ import ibs.news.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,7 +40,10 @@ public class SecurityConfig {
                         .requestMatchers("v1/user/{id}").permitAll()
                         .requestMatchers("v1/user/info").authenticated()
                         .requestMatchers("v1/user").authenticated()
-                        .requestMatchers("v1/news").authenticated()
+                        .requestMatchers(HttpMethod.POST, "v1/news").authenticated()
+                        .requestMatchers(HttpMethod.GET, "v1/news").permitAll()
+                        .requestMatchers("v1/news/user/{userId}").authenticated()
+                        .requestMatchers("v1/news/find").permitAll()
                 )
                 .exceptionHandling(config -> config.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
