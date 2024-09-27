@@ -76,4 +76,19 @@ public class NewsServiceImpl implements NewsService {
 
         return new CustomSuccessResponse<>(response);
     }
+
+    @Override
+    public CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> findNewsService(
+            Integer page, Integer perPage, String author, String keywords, Set<String> tags) {
+
+        Page<NewsEntity> pagedNews;
+        pagedNews = newsRepo.findNews(PageRequest.of(page, perPage, Sort.by("id").descending()),
+                author, keywords, tags);
+
+        List<GetNewsOutResponse> newsList = newsMapper.toDto(pagedNews.getContent());
+
+        var response = new PageableResponse<>(newsList, newsRepo.count());
+
+        return new CustomSuccessResponse<>(response);
+    }
 }

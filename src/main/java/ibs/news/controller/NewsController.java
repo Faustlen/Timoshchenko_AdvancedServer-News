@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,6 +51,13 @@ public class NewsController {
         return newsService.getUserNewsService(userId, newsRequest.getPage() - 1, newsRequest.getPerPage());
     }
 
+    @GetMapping("/find")
+    public CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> findNews(@Valid NewsRequest newsRequest) {
+
+        return newsService.findNewsService(newsRequest.getPage() - 1, newsRequest.getPerPage(),
+                newsRequest.getAuthor(), newsRequest.getKeywords(), newsRequest.getTags());
+    }
+
     @Data
     public static class NewsRequest {
 
@@ -60,5 +67,11 @@ public class NewsController {
         @Max(value = 100, message = ValidationConstants.TASKS_PER_PAGE_LESS_OR_EQUAL_100)
         @Positive(message = ValidationConstants.TASKS_PER_PAGE_GREATER_OR_EQUAL_1)
         private Integer perPage;
+
+        private String author;
+
+        private String keywords;
+
+        private Set<String> tags;
     }
 }
