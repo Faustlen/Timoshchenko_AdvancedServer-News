@@ -13,4 +13,7 @@ public interface NewsService {
     CreateNewsSuccessResponse createNewsService(CreateNewsRequest dto);
 
     CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> getNewsService(Integer page, Integer perPage);
+
+    CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> getUserNewsService(
+            String userIdStr, Integer page, Integer perPage);
 }

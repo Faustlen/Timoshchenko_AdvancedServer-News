@@ -12,8 +12,10 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.UUID;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +41,14 @@ public class NewsController {
     public CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> getNews(@Valid NewsRequest newsRequest) {
 
         return newsService.getNewsService(newsRequest.getPage() - 1, newsRequest.getPerPage());
+    }
+
+    @GetMapping("/user/{userId}")
+    public CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> getUserNews(
+            @PathVariable @UUID(message = ValidationConstants.MAX_UPLOAD_SIZE_EXCEEDED) String userId,
+            @Valid NewsRequest newsRequest) {
+
+        return newsService.getUserNewsService(userId, newsRequest.getPage() - 1, newsRequest.getPerPage());
     }
 
     @Data

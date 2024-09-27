@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +53,22 @@ public class NewsServiceImpl implements NewsService {
 
         Page<NewsEntity> pagedNews;
         pagedNews = newsRepo.findAll(PageRequest.of(page, perPage, Sort.by("id").descending()));
+
+        List<GetNewsOutResponse> newsList = newsMapper.toDto(pagedNews.getContent());
+
+        var response = new PageableResponse<>(newsList, newsRepo.count());
+
+        return new CustomSuccessResponse<>(response);
+    }
+
+    @Override
+    public CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> getUserNewsService(
+            String userIdStr, Integer page, Integer perPage) {
+
+        UUID userId = UUID.fromString(userIdStr);
+
+        Page<NewsEntity> pagedNews;
+        pagedNews = newsRepo.findByUserIdId(PageRequest.of(page, perPage, Sort.by("id").descending()), userId);
 
         List<GetNewsOutResponse> newsList = newsMapper.toDto(pagedNews.getContent());
 
