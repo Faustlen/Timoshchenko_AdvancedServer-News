@@ -19,7 +19,7 @@ public class CreateNewsRequest {
     private String description;
 
     @NotBlank(message = ValidationConstants.NEWS_IMAGE_HAS_TO_BE_PRESENT)
-    @Size(min = 3, max = 160, message = ValidationConstants.NEWS_IMAGE_LENGTH)
+    @Size(min = 3, max = 160, message = ValidationConstants.NEWS_IMAGE_HAS_TO_BE_PRESENT)
     private String image;
 
     private Set<@NotBlank(message = ValidationConstants.TAGS_NOT_VALID) String> tags;

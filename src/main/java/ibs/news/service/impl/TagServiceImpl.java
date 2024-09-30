@@ -15,7 +15,7 @@ public class TagServiceImpl implements TagService {
     private final TagRepository tagRepo;
 
     @Override
-    public Set<TagEntity> createTags(Set<String> tagsTitles) {
+    public synchronized Set<TagEntity> createTags(Set<String> tagsTitles) {
 
         Set<TagEntity> existingTags = tagRepo.findTags(tagsTitles);
 
