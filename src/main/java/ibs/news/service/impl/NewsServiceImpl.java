@@ -3,10 +3,13 @@ package ibs.news.service.impl;
 import ibs.news.dto.request.CreateNewsRequest;
 import ibs.news.dto.response.CreateNewsSuccessResponse;
 import ibs.news.dto.response.GetNewsOutResponse;
+import ibs.news.dto.response.common.BaseSuccessResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
 import ibs.news.dto.response.common.PageableResponse;
 import ibs.news.entity.NewsEntity;
 import ibs.news.entity.TagEntity;
+import ibs.news.error.CustomException;
+import ibs.news.error.ErrorCodes;
 import ibs.news.mapper.NewsMapper;
 import ibs.news.repository.NewsRepository;
 import ibs.news.security.UserEntityDetails;
@@ -14,7 +17,7 @@ import ibs.news.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -52,7 +55,7 @@ public class NewsServiceImpl implements NewsService {
             Integer page, Integer perPage) {
 
         Page<NewsEntity> pagedNews;
-        pagedNews = newsRepo.findAll(PageRequest.of(page, perPage, Sort.by("id").descending()));
+        pagedNews = newsRepo.findAll(PageRequest.of(page, perPage));
 
         List<GetNewsOutResponse> newsList = newsMapper.toDto(pagedNews.getContent());
 
@@ -68,7 +71,7 @@ public class NewsServiceImpl implements NewsService {
         UUID userId = UUID.fromString(userIdStr);
 
         Page<NewsEntity> pagedNews;
-        pagedNews = newsRepo.findByUserIdId(PageRequest.of(page, perPage, Sort.by("id").descending()), userId);
+        pagedNews = newsRepo.findByUserIdId(PageRequest.of(page, perPage), userId);
 
         List<GetNewsOutResponse> newsList = newsMapper.toDto(pagedNews.getContent());
 
@@ -82,7 +85,7 @@ public class NewsServiceImpl implements NewsService {
             Integer page, Integer perPage, String author, String keywords, Set<String> tags) {
 
         Page<NewsEntity> pagedNews;
-        pagedNews = newsRepo.findNews(PageRequest.of(page, perPage, Sort.by("id").descending()),
+        pagedNews = newsRepo.findNews(PageRequest.of(page, perPage),
                 author, keywords, tags);
 
         List<GetNewsOutResponse> newsList = newsMapper.toDto(pagedNews.getContent());
@@ -90,5 +93,25 @@ public class NewsServiceImpl implements NewsService {
         var response = new PageableResponse<>(newsList, newsRepo.count());
 
         return new CustomSuccessResponse<>(response);
+    }
+
+    @Override
+    public BaseSuccessResponse putNewsService(Long id, CreateNewsRequest dto) {
+
+        var userEntityDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+
+        Set<TagEntity> tags = tagService.createTags(dto.getTags());
+
+        NewsEntity news = newsRepo.findByIdAndAuthor(id, userEntityDetails.getUserEntity());
+        if (news == null) {
+            throw new CustomException(ErrorCodes.NEWS_NOT_FOUND, HttpStatus.BAD_REQUEST);
+        }
+
+        news = newsMapper.toEntity(dto, news);
+        news.setTags(tags);
+        newsRepo.save(news);
+
+        return new BaseSuccessResponse();
     }
 }

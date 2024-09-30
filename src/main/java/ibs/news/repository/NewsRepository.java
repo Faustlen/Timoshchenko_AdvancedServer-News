@@ -1,6 +1,7 @@
 package ibs.news.repository;
 
 import ibs.news.entity.NewsEntity;
+import ibs.news.entity.UserEntity;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,12 @@ public interface NewsRepository extends JpaRepository<NewsEntity, Long> {
     @EntityGraph(attributePaths = {"userId", "tags"})
     Page<NewsEntity> findAll(@NonNull Pageable pageable);
 
+    @Query("SELECT DISTINCT n FROM NewsEntity n " +
+            "JOIN FETCH n.userId u " +
+            "JOIN FETCH n.tags t " +
+            "WHERE n.id = :newsId AND n.userId = :user")
+    NewsEntity findByIdAndAuthor(Long newsId, UserEntity user);
+
     @NonNull
     @EntityGraph(attributePaths = {"userId", "tags"})
     Page<NewsEntity> findByUserIdId(@NonNull Pageable pageable, UUID userId);
@@ -25,6 +32,6 @@ public interface NewsRepository extends JpaRepository<NewsEntity, Long> {
             "JOIN FETCH n.tags t " +
             "WHERE (:author IS NULL OR u.name LIKE %:author%) " +
             "AND (COALESCE(:tagSet, NULL) IS NULL OR t.title IN :tagSet) " +
-            "AND (:keyword IS NULL OR (n.title LIKE %:keyword% OR n.title LIKE %:keyword%))")
+            "AND (:keyword IS NULL OR (n.title LIKE %:keyword% OR n.description LIKE %:keyword%))")
     Page<NewsEntity> findNews(Pageable pageable, String author, String keyword, Set<String> tagSet);
 }

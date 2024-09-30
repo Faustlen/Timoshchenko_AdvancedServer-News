@@ -4,6 +4,7 @@ import ibs.news.constrants.ValidationConstants;
 import ibs.news.dto.request.CreateNewsRequest;
 import ibs.news.dto.response.CreateNewsSuccessResponse;
 import ibs.news.dto.response.GetNewsOutResponse;
+import ibs.news.dto.response.common.BaseSuccessResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
 import ibs.news.dto.response.common.PageableResponse;
 import ibs.news.service.impl.NewsServiceImpl;
@@ -17,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,6 +58,14 @@ public class NewsController {
 
         return newsService.findNewsService(newsRequest.getPage() - 1, newsRequest.getPerPage(),
                 newsRequest.getAuthor(), newsRequest.getKeywords(), newsRequest.getTags());
+    }
+
+    @PutMapping("/{newsId}")
+    public BaseSuccessResponse putNews(
+            @PathVariable @Positive(message = ValidationConstants.ID_MUST_BE_POSITIVE) Long newsId,
+            @RequestBody @Valid CreateNewsRequest dto) {
+
+        return newsService.putNewsService(newsId, dto);
     }
 
     @Data

@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "v1/news").permitAll()
                         .requestMatchers("v1/news/user/{userId}").authenticated()
                         .requestMatchers("v1/news/find").permitAll()
+                        .requestMatchers("v1/news/{newsId}").authenticated()
                 )
                 .exceptionHandling(config -> config.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -61,5 +62,4 @@ public class SecurityConfig {
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 }
