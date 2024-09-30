@@ -2,6 +2,7 @@ package ibs.news.repository;
 
 import ibs.news.entity.NewsEntity;
 import ibs.news.entity.UserEntity;
+import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,4 +35,7 @@ public interface NewsRepository extends JpaRepository<NewsEntity, Long> {
             "AND (COALESCE(:tagSet, NULL) IS NULL OR t.title IN :tagSet) " +
             "AND (:keyword IS NULL OR (n.title LIKE %:keyword% OR n.description LIKE %:keyword%))")
     Page<NewsEntity> findNews(Pageable pageable, String author, String keyword, Set<String> tagSet);
+
+    @Transactional
+    void deleteByUserIdId(UUID userId);
 }
