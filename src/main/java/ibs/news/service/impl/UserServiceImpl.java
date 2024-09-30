@@ -7,6 +7,7 @@ import ibs.news.entity.UserEntity;
 import ibs.news.error.CustomException;
 import ibs.news.error.ErrorCodes;
 import ibs.news.mapper.UserMapper;
+import ibs.news.repository.NewsRepository;
 import ibs.news.repository.UserRepository;
 import ibs.news.security.UserEntityDetails;
 import ibs.news.service.UserService;
@@ -25,6 +26,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     private final UserRepository userRepo;
+
+    private final NewsRepository newsRepo;
 
     @Override
     public CustomSuccessResponse<List<PublicUserView>> getAllUsersService() {
@@ -80,6 +83,8 @@ public class UserServiceImpl implements UserService {
     public void deleteUserService() {
 
         var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        newsRepo.deleteByUserIdId(userDetails.getId());
 
         userRepo.deleteById(userDetails.getId());
     }

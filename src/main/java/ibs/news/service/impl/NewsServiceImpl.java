@@ -101,16 +101,32 @@ public class NewsServiceImpl implements NewsService {
         var userEntityDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
 
+        NewsEntity news = newsRepo.findByIdAndAuthor(id, userEntityDetails.getUserEntity());
+        if (news == null) {
+            throw new CustomException(ErrorCodes.NEWS_NOT_FOUND, HttpStatus.BAD_REQUEST);
+        }
+
         Set<TagEntity> tags = tagService.createTags(dto.getTags());
+
+        news = newsMapper.toEntity(dto, news);
+        news.setTags(tags);
+        newsRepo.save(news);
+
+        return new BaseSuccessResponse();
+    }
+
+    @Override
+    public BaseSuccessResponse deleteNewsService(Long id) {
+
+        var userEntityDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
 
         NewsEntity news = newsRepo.findByIdAndAuthor(id, userEntityDetails.getUserEntity());
         if (news == null) {
             throw new CustomException(ErrorCodes.NEWS_NOT_FOUND, HttpStatus.BAD_REQUEST);
         }
 
-        news = newsMapper.toEntity(dto, news);
-        news.setTags(tags);
-        newsRepo.save(news);
+        newsRepo.delete(news);
 
         return new BaseSuccessResponse();
     }

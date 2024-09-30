@@ -22,4 +22,6 @@ public interface NewsService {
             Integer page, Integer perPage, String author, String keywords, Set<String> tags);
 
     BaseSuccessResponse putNewsService(Long id, CreateNewsRequest dto);
+
+    BaseSuccessResponse deleteNewsService(Long id);
 }
