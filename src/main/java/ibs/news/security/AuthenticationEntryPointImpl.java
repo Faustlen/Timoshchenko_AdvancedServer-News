@@ -29,6 +29,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         errorCodes.add(errorCode);
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
         response.getWriter().write(convertObjectToJson(new CustomSuccessResponse<>(errorCode, errorCodes)));
     }
 

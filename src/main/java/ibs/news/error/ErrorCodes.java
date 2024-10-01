@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Getter
 public enum ErrorCodes {
-    UNKNOWN(0, "unknown"),
+    UNKNOWN(0, ValidationConstants.UNKNOWN),
     USERNAME_SIZE_NOT_VALID(1, ValidationConstants.USERNAME_SIZE_NOT_VALID),
     ROLE_SIZE_NOT_VALID(2, ValidationConstants.ROLE_SIZE_NOT_VALID),
     EMAIL_SIZE_NOT_VALID(3, ValidationConstants.EMAIL_SIZE_NOT_VALID),
