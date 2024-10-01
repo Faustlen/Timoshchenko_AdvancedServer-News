@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -55,6 +56,16 @@ public class ApplicationExceptionHandler {
 
         var errorCodes = new ArrayList<Integer>();
         errorCodes.add(ErrorCodes.getErrorCodeByMessage(ValidationConstants.HTTP_MESSAGE_NOT_READABLE_EXCEPTION));
+
+        return new CustomSuccessResponse<>(errorCodes.getFirst(), errorCodes);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public CustomSuccessResponse<?> handleMissingParams(MissingServletRequestParameterException e) {
+
+        var errorCodes = new ArrayList<Integer>();
+        errorCodes.add(ErrorCodes.getErrorCodeByMessage(ValidationConstants.UNKNOWN));
 
         return new CustomSuccessResponse<>(errorCodes.getFirst(), errorCodes);
     }
