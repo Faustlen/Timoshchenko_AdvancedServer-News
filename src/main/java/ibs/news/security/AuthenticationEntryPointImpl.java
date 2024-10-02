@@ -2,6 +2,7 @@ package ibs.news.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ibs.news.config.LogInterceptor;
 import ibs.news.constrants.ValidationConstants;
 import ibs.news.dto.response.common.CustomSuccessResponse;
 import ibs.news.error.ErrorCodes;
@@ -20,6 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
 
+    private final LogInterceptor logInterceptor;
+
     @Override
     public void commence(
             HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
@@ -31,6 +34,10 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
         response.getWriter().write(convertObjectToJson(new CustomSuccessResponse<>(errorCode, errorCodes)));
+
+        logInterceptor.createLog(HttpStatus.UNAUTHORIZED.value(), request.getMethod(), request.getRequestURI(),
+                ValidationConstants.UNAUTHORISED);
+
     }
 
     public String convertObjectToJson(Object object) throws JsonProcessingException {

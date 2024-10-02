@@ -1,7 +1,6 @@
 package ibs.news.config;
 
 import ibs.news.security.AuthenticationEntryPointImpl;
-import ibs.news.security.CustomExceptionFilter;
 import ibs.news.security.JwtAuthenticationFilter;
 import ibs.news.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +27,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private final CustomExceptionFilter customExceptionFilter;
-
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Bean
@@ -51,8 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("v1/file/**").permitAll()
                 )
                 .exceptionHandling(config -> config.authenticationEntryPoint(authenticationEntryPoint))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(customExceptionFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
