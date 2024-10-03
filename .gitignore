@@ -18,3 +18,5 @@ build/
 *.ipr
 
 application-*.properties
+
+src/main/resources/files
