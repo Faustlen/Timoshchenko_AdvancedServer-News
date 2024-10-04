@@ -14,7 +14,6 @@ import ibs.news.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
@@ -40,10 +39,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public CustomSuccessResponse<PublicUserView> getUserInfoService() {
 
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        UserEntityDetails userEntityDetails = (UserEntityDetails) userDetails;
-        UserEntity user = userEntityDetails.getUserEntity();
+        var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserEntity user = userDetails.getUserEntity();
 
         PublicUserView response = userMapper.toViewDto(user);
 
@@ -66,7 +63,7 @@ public class UserServiceImpl implements UserService {
     public CustomSuccessResponse<PublicUserView> replaceUserService(UserNewDataRequest dto) {
 
         if (userRepo.existsByEmail(dto.getEmail())) {
-            throw new CustomException(ErrorCodes.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCodes.USER_WITH_THIS_EMAIL_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
         }
 
         var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

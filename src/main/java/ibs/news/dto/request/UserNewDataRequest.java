@@ -4,9 +4,11 @@ import ibs.news.constrants.ValidationConstants;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class UserNewDataRequest {
 
     @NotBlank(message = ValidationConstants.USER_NAME_HAS_TO_BE_PRESENT)
