@@ -9,7 +9,6 @@ import ibs.news.dto.response.PublicUserView;
 import ibs.news.entity.NewsEntity;
 import ibs.news.entity.TagEntity;
 import ibs.news.entity.UserEntity;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;

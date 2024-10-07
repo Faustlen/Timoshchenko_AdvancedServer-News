@@ -7,16 +7,10 @@ import ibs.news.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -57,16 +51,13 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public ResponseEntity<Resource> getFileService(String fileName) {
+    public File getFileService(String fileName) {
         File file = new File(System.getProperty("user.dir") + shelter, fileName);
 
         if (!file.exists() || !file.isFile()) {
             throw new CustomException(ErrorCodes.EXCEPTION_HANDLER_NOT_PROVIDED, HttpStatus.BAD_REQUEST);
         }
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-                .contentType(MediaType.valueOf(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .body(UrlResource.from(file.toURI()));
+        return file;
     }
 }

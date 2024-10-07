@@ -9,20 +9,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
@@ -38,12 +33,14 @@ public class FileServiceImplTest implements Constants {
     @InjectMocks
     FileServiceImpl fileService;
 
+    private final String tempShelter = "/src/test/java/ibs/news/files/";
+
     @BeforeEach
     void SetUp() {
         MockitoAnnotations.openMocks(this);
 
         fileService = new FileServiceImpl();
-        fileService.setShelter("/src/test/java/ibs/news/files/");
+        fileService.setShelter(tempShelter);
     }
 
     @Test
@@ -87,22 +84,26 @@ public class FileServiceImplTest implements Constants {
 
     @Test
     void getFileServiceShouldReturnFileWhenFileExists () {
+        String tempDir = System.getProperty("user.dir") + tempShelter;
+        File testFile = new File(tempDir, FILE);
+        try (FileWriter writer = new FileWriter(testFile)) {
+            writer.write("This is a test file.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        assert testFile.exists();
 
-        ResponseEntity<Resource> responseEntity = fileService.getFileService("Geralt.jpg");
+        File response = fileService.getFileService(FILE);
 
-        assertNotNull(responseEntity.getBody());
-        assertInstanceOf(UrlResource.class, responseEntity.getBody());
-        HttpHeaders headers = responseEntity.getHeaders();
-        assertEquals("attachment; filename=\"Geralt.jpg\"", headers.getFirst(HttpHeaders.CONTENT_DISPOSITION));
-        assertEquals(MediaType.MULTIPART_FORM_DATA, responseEntity.getHeaders().getContentType());
-        Resource resource = responseEntity.getBody();
+        assertNotNull(response);
+        testFile.delete();
     }
 
     @Test
     void getFileServiceShouldThrowExceptionWhenFileNotFound () {
 
         CustomException exception = assertThrows(CustomException.class, () ->
-        fileService.getFileService(FILE));
+        fileService.getFileService(TITLE));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
         assertEquals(ErrorCodes.EXCEPTION_HANDLER_NOT_PROVIDED, exception.getErrorCodes());
