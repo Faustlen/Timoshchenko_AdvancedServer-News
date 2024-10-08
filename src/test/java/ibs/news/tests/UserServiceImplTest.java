@@ -158,7 +158,6 @@ public class UserServiceImplTest implements Constants {
     void deleteUserServiceShouldDeleteUserAndNews() {
         userService.deleteUserService();
 
-        verify(newsRepository, times(1)).deleteByUserIdId(userEntityDetails.getId());
         verify(userRepository, times(1)).deleteById(userEntityDetails.getId());
     }
 }

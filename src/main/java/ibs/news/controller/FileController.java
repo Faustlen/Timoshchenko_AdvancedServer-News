@@ -37,7 +37,7 @@ public class FileController {
             throw new CustomException(ErrorCodes.UNKNOWN, HttpStatus.BAD_REQUEST);
         }
 
-        return fileService.uploadFileService(file);
+        return new CustomSuccessResponse<>(fileService.uploadFileService(file));
     }
 
     @GetMapping("/{fileName}")

@@ -1,7 +1,9 @@
 package ibs.news.entity;
 
+import ibs.news.service.listeners.UserListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,6 +16,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @Data
+@EntityListeners(UserListener.class)
 @Table(name = "users")
 public class UserEntity {
 

@@ -7,7 +7,6 @@ import ibs.news.entity.UserEntity;
 import ibs.news.error.CustomException;
 import ibs.news.error.ErrorCodes;
 import ibs.news.mapper.UserMapper;
-import ibs.news.repository.NewsRepository;
 import ibs.news.repository.UserRepository;
 import ibs.news.security.UserEntityDetails;
 import ibs.news.service.UserService;
@@ -26,8 +25,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepo;
 
-    private final NewsRepository newsRepo;
-
     @Override
     public CustomSuccessResponse<List<PublicUserView>> getAllUsersService() {
 
@@ -39,8 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public CustomSuccessResponse<PublicUserView> getUserInfoService() {
 
-        var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserEntity user = userDetails.getUserEntity();
+        UserEntity user = getAuthorizedUser();
 
         PublicUserView response = userMapper.toViewDto(user);
 
@@ -66,10 +62,7 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(ErrorCodes.USER_WITH_THIS_EMAIL_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
         }
 
-        var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        UserEntity user = userDetails.getUserEntity();
-
+        UserEntity user = getAuthorizedUser();
         user = userMapper.toEntity(dto, user);
         user = userRepo.save(user);
 
@@ -81,8 +74,11 @@ public class UserServiceImpl implements UserService {
 
         var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        newsRepo.deleteByUserIdId(userDetails.getId());
-
         userRepo.deleteById(userDetails.getId());
+    }
+
+    private UserEntity getAuthorizedUser() {
+        var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUserEntity();
     }
 }

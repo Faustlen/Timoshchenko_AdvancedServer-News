@@ -10,22 +10,22 @@ import org.mockito.InjectMocks;
 import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Objects;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class FileServiceImplTest implements Constants {
@@ -45,28 +45,23 @@ public class FileServiceImplTest implements Constants {
 
     @Test
     void uploadFileServiceShouldReturnFileUrlWhenFileIsUploadedSuccessfully() throws IOException {
-        MultipartFile file = mock(MultipartFile.class);
-
-        when(file.isEmpty()).thenReturn(false);
-        when(file.getOriginalFilename()).thenReturn(FILE);
-        doNothing().when(file).transferTo(any(File.class));
+        MultipartFile multipartFile = new MockMultipartFile(
+                FILE, FILE, "text/plain", ("text").getBytes()
+        );
 
         try (MockedStatic<ServletUriComponentsBuilder> mockedBuilder = mockStatic(ServletUriComponentsBuilder.class)) {
-
             ServletUriComponentsBuilder builderMock = mock(ServletUriComponentsBuilder.class);
 
             mockedBuilder.when(ServletUriComponentsBuilder::fromCurrentContextPath).thenReturn(builderMock);
             when(builderMock.path("/v1/file/")).thenReturn(builderMock);
-            when(builderMock.path(Objects.requireNonNull(file.getOriginalFilename()))).thenReturn(builderMock);
+            when(builderMock.path(anyString())).thenReturn(builderMock);
             when(builderMock.toUriString()).thenReturn("http://localhost:8080/v1/file/" + FILE);
 
-            var response = fileService.uploadFileService(file);
+            var response = fileService.uploadFileService(multipartFile);
 
-            assertEquals("http://localhost:8080/v1/file/" + FILE, response.getData());
-            verify(file, times(1)).transferTo(any(File.class));
+            assertEquals("http://localhost:8080/v1/file/" + FILE, response);
 
-            File tempFile = new File(System.getProperty("user.dir") + "/src/test/java/ibs/news/files/" + FILE);
-            tempFile.delete();
+            deleteFiles();
         }
     }
 
@@ -75,7 +70,7 @@ public class FileServiceImplTest implements Constants {
         MultipartFile file = mock(MultipartFile.class);
         when(file.isEmpty()).thenReturn(true);
 
-        CustomException exception = assertThrows(CustomException.class, ()->
+        CustomException exception = assertThrows(CustomException.class, () ->
                 fileService.uploadFileService(file));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
@@ -83,9 +78,13 @@ public class FileServiceImplTest implements Constants {
     }
 
     @Test
-    void getFileServiceShouldReturnFileWhenFileExists () {
+    void getFileServiceShouldReturnFileWhenFileExists() {
         String tempDir = System.getProperty("user.dir") + tempShelter;
         File testFile = new File(tempDir, FILE);
+        File testDir = new File(tempDir);
+        if (!testDir.exists()) {
+            testDir.mkdirs();
+        }
         try (FileWriter writer = new FileWriter(testFile)) {
             writer.write("This is a test file.");
         } catch (IOException e) {
@@ -96,16 +95,33 @@ public class FileServiceImplTest implements Constants {
         File response = fileService.getFileService(FILE);
 
         assertNotNull(response);
-        testFile.delete();
+        deleteFiles();
     }
 
     @Test
-    void getFileServiceShouldThrowExceptionWhenFileNotFound () {
+    void getFileServiceShouldThrowExceptionWhenFileNotFound() {
 
         CustomException exception = assertThrows(CustomException.class, () ->
-        fileService.getFileService(TITLE));
+                fileService.getFileService(TITLE));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
         assertEquals(ErrorCodes.EXCEPTION_HANDLER_NOT_PROVIDED, exception.getErrorCodes());
+    }
+
+    private void deleteFiles() {
+        Path directoryPath = Path.of(System.getProperty("user.dir") + tempShelter);
+
+        try {
+            if (Files.isDirectory(directoryPath)) {
+                try (DirectoryStream<Path> stream = Files.newDirectoryStream(directoryPath)) {
+                    for (Path entry : stream) {
+                        Files.delete(entry);
+                    }
+                }
+            }
+            Files.delete(directoryPath);
+        } catch (IOException e) {
+            System.err.println("Ошибка при удалении файлов: " + e.getMessage());
+        }
     }
 }
