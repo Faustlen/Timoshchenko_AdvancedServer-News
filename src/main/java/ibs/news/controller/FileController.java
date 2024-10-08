@@ -6,7 +6,10 @@ import ibs.news.error.ErrorCodes;
 import ibs.news.service.impl.FileServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,13 +37,18 @@ public class FileController {
             throw new CustomException(ErrorCodes.UNKNOWN, HttpStatus.BAD_REQUEST);
         }
 
-        return fileService.uploadFileService(file);
+        return new CustomSuccessResponse<>(fileService.uploadFileService(file));
     }
 
     @GetMapping("/{fileName}")
     public ResponseEntity<Resource> getFile(@PathVariable String fileName) {
 
-        return fileService.getFileService(fileName);
+        File file = fileService.getFileService(fileName);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentType(MediaType.valueOf(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .body(UrlResource.from(file.toURI()));
     }
 
 }

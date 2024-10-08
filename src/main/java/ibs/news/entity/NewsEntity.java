@@ -1,6 +1,8 @@
 package ibs.news.entity;
 
+import ibs.news.service.listeners.NewsListener;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,6 +19,7 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @Data
+@EntityListeners(NewsListener.class)
 @Table(name = "news")
 public class NewsEntity {
 
