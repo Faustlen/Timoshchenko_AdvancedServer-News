@@ -1,3 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS news_feed
+
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     name VARCHAR(25) NOT NULL,

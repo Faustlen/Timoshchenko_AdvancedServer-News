@@ -10,7 +10,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class RegisterUserRequest {
-
     @NotBlank(message = ValidationConstants.USER_NAME_HAS_TO_BE_PRESENT)
     @Size(min = 3, max = 25, message = ValidationConstants.USERNAME_SIZE_NOT_VALID)
     private String name;

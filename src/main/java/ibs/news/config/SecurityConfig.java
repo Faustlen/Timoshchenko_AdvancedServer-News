@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final JwtProvider jwtProvider;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -36,21 +33,18 @@ public class SecurityConfig {
                 .sessionManagement(man -> man.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "v1/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "v1/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "v1/user/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "v1/user/info").authenticated()
-                        .requestMatchers(HttpMethod.GET, "v1/user").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "v1/user").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "v1/user").authenticated()
-                        .requestMatchers(HttpMethod.POST, "v1/news").authenticated()
-                        .requestMatchers(HttpMethod.GET, "v1/news").permitAll()
-                        .requestMatchers(HttpMethod.GET, "v1/news/user/{userId}").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "v1/news/find").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "v1/news/{newsId}").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "v1/news/{newsId}").authenticated()
-                        .requestMatchers(HttpMethod.POST, "v1/file/uploadFile").permitAll()
-                        .requestMatchers(HttpMethod.GET, "v1/file/{fileName}").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "v1/auth/register", "v1/auth/login", "v1/file/uploadFile").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "v1/user/{id}", "v1/news", "v1/file/{fileName}").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "v1/user/info", "v1/user", "v1/news/user/{userId}").authenticated()
+                        .requestMatchers(HttpMethod.PUT,
+                                "v1/user", "v1/news/find", "v1/news/{newsId}").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,
+                                "v1/user", "v1/news/{newsId}").authenticated()
+                        .requestMatchers(HttpMethod.POST,
+                                "v1/news").authenticated()
                 )
                 .exceptionHandling(config -> config.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -61,11 +55,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
     }
 }

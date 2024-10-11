@@ -2,8 +2,6 @@ package ibs.news.error;
 
 import ibs.news.constrants.ValidationConstants;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,12 +61,9 @@ public enum ErrorCodes {
 
     private final String errorMessage;
 
-    private final LocalDateTime timeStamp;
-
     ErrorCodes(Integer errorCode, String errorMessage) {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
-        this.timeStamp = LocalDateTime.now();
     }
 
     static {

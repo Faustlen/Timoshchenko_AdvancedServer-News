@@ -1,3 +1,19 @@
+spring.application.name=news
+spring.jpa.open-in-view=false
+
+spring.flyway.enabled=true
+spring.flyway.schemas=news_feed
+
+spring.jpa.properties.hibernate.jdbc.batch_size=25
+spring.jpa.properties.hibernate.order_updates=true
+spring.jpa.properties.hibernate.order_inserts=true
+spring.jpa.properties.hibernate.generate_statistics=true
+spring.jpa.properties.hibernate.jdbc.batch_versioned_data=true
+
+spring.profiles.active=dev
+
+api.version=v1
+
 spring.jpa.hibernate.ddl-auto=<CREATE_OR_UPDATE_OR_VALIDATE>
 spring.jpa.show-sql=true
 

@@ -4,7 +4,6 @@ import ibs.news.entity.NewsEntity;
 import jakarta.persistence.PreRemove;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
-
 import java.io.File;
 
 @Setter

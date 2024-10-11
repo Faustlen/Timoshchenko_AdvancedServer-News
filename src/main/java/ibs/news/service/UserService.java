@@ -1,20 +1,28 @@
 package ibs.news.service;
 
 import ibs.news.dto.request.UserNewDataRequest;
-import ibs.news.dto.response.PublicUserView;
+import ibs.news.dto.response.PublicUserResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
+import ibs.news.entity.UserEntity;
+import ibs.news.security.UserEntityDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
 public interface UserService {
 
-    CustomSuccessResponse<List<PublicUserView>> getAllUsersService();
+    CustomSuccessResponse<List<PublicUserResponse>> getAllUsersService();
 
-    CustomSuccessResponse<PublicUserView> getUserInfoService();
+    CustomSuccessResponse<PublicUserResponse> getUserInfoService();
 
-    CustomSuccessResponse<PublicUserView> getUserInfoByIdService(String id);
+    CustomSuccessResponse<PublicUserResponse> getUserInfoByIdService(String id);
 
-    CustomSuccessResponse<PublicUserView> replaceUserService(UserNewDataRequest dto);
+    CustomSuccessResponse<PublicUserResponse> replaceUserService(UserNewDataRequest dto);
 
     void deleteUserService();
+
+    default UserEntity getAuthorizedUser() {
+        var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUserEntity();
+    }
 }

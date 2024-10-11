@@ -9,11 +9,18 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
+    private static final String TOKEN_PREFIX = "Bearer ";
+
+    private static final int TOKEN_PREFIX_LENGTH = 7;
 
     private final JwtProvider jwtProvider;
 
@@ -23,10 +30,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String authorizationHeader = request.getHeader("Authorization");
+            String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
 
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                String token = authorizationHeader.substring(7);
+            if (authorizationHeader != null && authorizationHeader.startsWith(TOKEN_PREFIX)) {
+                String token = authorizationHeader.substring(TOKEN_PREFIX_LENGTH);
 
                 if (jwtProvider.validateToken(token)) {
                     String email = jwtProvider.getEmailFromToken(token);

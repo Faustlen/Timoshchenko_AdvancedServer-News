@@ -2,10 +2,11 @@ package ibs.news.constrants;
 
 import ibs.news.dto.request.AuthUserRequest;
 import ibs.news.dto.request.CreateNewsRequest;
+import ibs.news.dto.request.NewsRequest;
 import ibs.news.dto.request.RegisterUserRequest;
 import ibs.news.dto.request.UserNewDataRequest;
 import ibs.news.dto.response.LoginUserResponse;
-import ibs.news.dto.response.PublicUserView;
+import ibs.news.dto.response.PublicUserResponse;
 import ibs.news.entity.NewsEntity;
 import ibs.news.entity.TagEntity;
 import ibs.news.entity.UserEntity;
@@ -13,26 +14,28 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.apache.commons.lang3.RandomStringUtils.*;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 
-public interface Constants {
+public class Constants {
 
-    UUID USER_UUID = UUID.randomUUID();
-    Long NEWS_ID = Long.valueOf(randomNumeric(3));
-    String TITLE = randomAlphanumeric(3, 25);
-    String DESCRIPTION = randomAlphanumeric(3, 25);
-    String IMAGE = randomAlphanumeric(3, 25);
-    String TAG = randomAlphanumeric(3, 25);
-    String ANOTHER_TAG = randomAlphanumeric(3, 25);
-    String NAME = randomAlphanumeric(3, 25);
-    String EMAIL = randomAlphanumeric(3, 25) + '@' + randomAlphanumeric(3, 25) + ".com";
-    String PASSWORD = randomAlphanumeric(3, 25);
-    String ROLE = randomAlphanumeric(3, 25);
-    String AVATAR = randomAlphanumeric(3, 25);
-    String TOKEN = randomAlphanumeric(30);
-    String FILE = randomAlphanumeric(3,25) + ".txt";
+    public static final UUID USER_UUID = UUID.randomUUID();
+    public static final Long NEWS_ID = Long.valueOf(randomNumeric(3));
+    public static final String TITLE = randomAlphanumeric(3, 25);
+    public static final String DESCRIPTION = randomAlphanumeric(3, 25);
+    public static final String IMAGE = randomAlphanumeric(3, 25);
+    public static final String TAG = randomAlphanumeric(3, 25);
+    public static final String ANOTHER_TAG = randomAlphanumeric(3, 25);
+    public static final String NAME = randomAlphanumeric(3, 25);
+    public static final String EMAIL = randomAlphanumeric(3, 25) + '@' + randomAlphanumeric(3, 25) + ".com";
+    public static final String ANOTHER_EMAIL = randomAlphanumeric(3, 25) + '@' + randomAlphanumeric(3, 25) + ".com";
+    public static final String PASSWORD = randomAlphanumeric(3, 25);
+    public static final String ROLE = randomAlphanumeric(3, 25);
+    public static final String AVATAR = randomAlphanumeric(3, 25);
+    public static final String TOKEN = randomAlphanumeric(30);
+    public static final String FILE = randomAlphanumeric(3,25) + ".txt";
 
-    default UserEntity createUserEntity() {
+    public static UserEntity createUserEntity() {
         UserEntity userEntity = new UserEntity();
         userEntity.setName(NAME);
         userEntity.setEmail(EMAIL);
@@ -43,38 +46,49 @@ public interface Constants {
         return userEntity;
     }
 
-    default RegisterUserRequest createRegisterUserRequest() {
+    public static UserEntity createAnotherUserEntity() {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setName(NAME);
+        userEntity.setEmail(ANOTHER_EMAIL);
+        userEntity.setPassword(PASSWORD);
+        userEntity.setRole(ROLE);
+        userEntity.setAvatar(AVATAR);
+
+        return userEntity;
+    }
+
+    public static RegisterUserRequest createRegisterUserRequest() {
         return new RegisterUserRequest(NAME, EMAIL, PASSWORD, ROLE, AVATAR);
     }
 
-    default LoginUserResponse creteLoginUserResponse() {
+    public static LoginUserResponse creteLoginUserResponse() {
         return new LoginUserResponse(null, NAME, EMAIL, ROLE, AVATAR, null);
     }
 
-    default AuthUserRequest createAuthUserRequest() {
+    public static AuthUserRequest createAuthUserRequest() {
         return new AuthUserRequest(EMAIL, PASSWORD);
     }
 
-    default PublicUserView createPublicUserView() {
-        return new PublicUserView(USER_UUID, NAME, EMAIL, ROLE, AVATAR);
+    public static PublicUserResponse createPublicUserView() {
+        return new PublicUserResponse(USER_UUID, NAME, EMAIL, ROLE, AVATAR);
     }
 
-    default UserNewDataRequest createUserNewDataRequest() {
+    public static UserNewDataRequest createUserNewDataRequest() {
         return new UserNewDataRequest(NAME, EMAIL, ROLE, AVATAR);
     }
 
-    default CreateNewsRequest createCreateNewsRequest() {
+    public static CreateNewsRequest createCreateNewsRequest() {
         return new CreateNewsRequest(TITLE, DESCRIPTION, IMAGE, Set.of(TAG));
     }
 
-    default TagEntity createTagEntity() {
+    public static TagEntity createTagEntity() {
         return new TagEntity(TAG);
     }
 
-    default NewsEntity createNewsEntity() {
+    public static NewsEntity createNewsEntity() {
         NewsEntity newsEntity = new NewsEntity();
         newsEntity.setId(NEWS_ID);
-        newsEntity.setUserId(createUserEntity());
+        newsEntity.setAuthor(createUserEntity());
         newsEntity.setTitle(TITLE);
         newsEntity.setDescription(DESCRIPTION);
         newsEntity.setImage(IMAGE);
@@ -83,11 +97,22 @@ public interface Constants {
         return newsEntity;
     }
 
-    default Set<String> createTagsTitles() {
+    public static Set<String> createTagsTitles() {
         Set<String> tags = new HashSet<>();
         tags.add(TAG);
         tags.add(ANOTHER_TAG);
 
         return tags;
+    }
+
+    public static NewsRequest createNewsRequest() {
+        NewsRequest newsRequest = new NewsRequest();
+        newsRequest.setPage(1);
+        newsRequest.setPerPage(10);
+        newsRequest.setAuthor(NAME);
+        newsRequest.setKeywords(TITLE);
+        newsRequest.setTags(Set.of(TAG));
+
+        return newsRequest;
     }
 }

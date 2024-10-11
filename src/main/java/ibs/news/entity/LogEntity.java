@@ -5,18 +5,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
-@Data
-@Table(name = "logs")
+@Getter
+@Table(name = "logs", schema = "news_feed")
 public class LogEntity {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private Integer status;
 
@@ -27,4 +27,12 @@ public class LogEntity {
     private String uri;
 
     private String useId;
+
+    public LogEntity(Integer status, String exception, String method, String uri, String useId) {
+        this.status = status;
+        this.exception = exception;
+        this.method = method;
+        this.uri = uri;
+        this.useId = useId;
+    }
 }

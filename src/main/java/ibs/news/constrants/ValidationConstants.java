@@ -1,7 +1,6 @@
 package ibs.news.constrants;
 
 public interface ValidationConstants {
-
     String UNKNOWN = "Unknown";
 
     String USERNAME_SIZE_NOT_VALID = "Username size should be between 3 and 25";
@@ -97,4 +96,6 @@ public interface ValidationConstants {
     String UNAUTHORISED = "unauthorised";
 
     String ERROR_MESSAGE = "error message";
+
+    String NO_ERRORS = "no errors";
 }

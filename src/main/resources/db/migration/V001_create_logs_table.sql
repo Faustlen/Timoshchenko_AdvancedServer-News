@@ -1,5 +1,7 @@
+CREATE SCHEMA IF NOT EXISTS news_feed
+
 CREATE TABLE logs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id UUID PRIMARY KEY,
     status INT,
     exception VARCHAR(255),
     method VARCHAR(255),

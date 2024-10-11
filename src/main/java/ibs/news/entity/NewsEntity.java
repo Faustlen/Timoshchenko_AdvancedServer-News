@@ -11,25 +11,25 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import lombok.Setter;
 import java.util.Set;
 
 @Entity
 @NoArgsConstructor
-@Data
+@Setter
+@Getter
 @EntityListeners(NewsListener.class)
-@Table(name = "news")
+@Table(name = "news", schema = "news_feed")
 public class NewsEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity userId;
+    private UserEntity author;
 
     private String title;
 
