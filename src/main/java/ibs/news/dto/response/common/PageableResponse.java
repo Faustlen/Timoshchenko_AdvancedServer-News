@@ -2,16 +2,16 @@ package ibs.news.dto.response.common;
 
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
 
 @Getter
 @Setter
 public class PageableResponse<T> {
-
-    private T content;
+    private List<T> content;
 
     private Long numberOfElements;
 
-    public PageableResponse(T content, Long numberOfElements) {
+    public PageableResponse(List<T> content, Long numberOfElements) {
         this.content = content;
         this.numberOfElements = numberOfElements;
     }

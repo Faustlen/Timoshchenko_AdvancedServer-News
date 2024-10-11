@@ -6,7 +6,6 @@ import jakarta.persistence.PreRemove;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-
 import java.io.File;
 
 @Setter
@@ -31,6 +30,6 @@ public class UserListener {
             file.delete();
         }
 
-        newsRepo.deleteByUserIdId(user.getId());
+        newsRepo.deleteByAuthorId(user.getId());
     }
 }

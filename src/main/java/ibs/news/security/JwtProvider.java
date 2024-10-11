@@ -1,6 +1,7 @@
 package ibs.news.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -11,12 +12,11 @@ import java.util.Date;
 
 @Component
 public class JwtProvider {
-
     @Value("${jwt.secret}")
     private String secretKey;
 
     @Value("${jwt.expiration}")
-    private long validityInMilliseconds;
+    private Long validityInMilliseconds;
 
     public String generateToken(String mail) {
 
@@ -35,11 +35,15 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token) {
-        Jwts.parser()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseSignedClaims(token);
-        return true;
+        try {
+            Jwts.parser()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            return false;
+        }
     }
 
     public String getEmailFromToken(String token) {

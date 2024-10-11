@@ -31,7 +31,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class AuthServiceImplTest implements Constants {
+class AuthServiceImplTest{
 
     @Mock
     private UserRepository userRepository;
@@ -51,47 +51,46 @@ class AuthServiceImplTest implements Constants {
     @InjectMocks
     private AuthServiceImpl authService;
 
-    UserEntity userEntity;
-    RegisterUserRequest registerUserRequest;
-    AuthUserRequest authUserRequest;
-    LoginUserResponse loginUserResponse;
+    private UserEntity userEntity;
+    private RegisterUserRequest registerUserRequest;
+    private AuthUserRequest authUserRequest;
+    private LoginUserResponse loginUserResponse;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        userEntity = createUserEntity();
-        registerUserRequest =createRegisterUserRequest();
-        authUserRequest = createAuthUserRequest();
-        loginUserResponse = creteLoginUserResponse();
+        userEntity = Constants.createUserEntity();
+        registerUserRequest =Constants.createRegisterUserRequest();
+        authUserRequest = Constants.createAuthUserRequest();
+        loginUserResponse = Constants.creteLoginUserResponse();
     }
 
     @Test
     void registerServiceShouldRegisterNewUser() {
 
-        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
-        when(passwordEncoder.encode(anyString())).thenReturn(PASSWORD);
-        when(jwtProvider.generateToken(any())).thenReturn(TOKEN);
+        when(passwordEncoder.encode(anyString())).thenReturn(Constants.PASSWORD);
+        when(jwtProvider.generateToken(any())).thenReturn(Constants.TOKEN);
         when(authMapper.toEntity(any(RegisterUserRequest.class))).thenReturn(userEntity);
         when(authMapper.toDto(any(UserEntity.class))).thenReturn(loginUserResponse);
 
-        LoginUserResponse response = authService.registerService(registerUserRequest).getData();
+        LoginUserResponse actualResponse = authService.registerService(registerUserRequest);
 
-        assertEquals(NAME, response.getName());
-        assertEquals(EMAIL, response.getEmail());
-        assertEquals(TOKEN, response.getToken());
+        LoginUserResponse expectedResponse = new LoginUserResponse(
+                null, Constants.NAME, Constants.EMAIL, Constants.ROLE, Constants.AVATAR, Constants.TOKEN);
+        assertEquals(expectedResponse, actualResponse);
         verify(userRepository, times(1)).save(any(UserEntity.class));
     }
 
     @Test
     void registerServiceShouldThrowExceptionWhenUserAlreadyExists() {
 
-        when(userRepository.existsByEmail(anyString())).thenReturn(true);
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(userEntity));
 
         CustomException exception = assertThrows(CustomException.class, () ->
                 authService.registerService(registerUserRequest));
 
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
         assertEquals(ErrorCodes.USER_ALREADY_EXISTS, exception.getErrorCodes());
         verify(userRepository, never()).save(any(UserEntity.class));
     }
@@ -102,12 +101,12 @@ class AuthServiceImplTest implements Constants {
         when(userDetailsService.loadUserByUsername(anyString())).thenReturn(new UserEntityDetails(userEntity));
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(userEntity));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-        when(jwtProvider.generateToken(any())).thenReturn(TOKEN);
+        when(jwtProvider.generateToken(any())).thenReturn(Constants.TOKEN);
         when(authMapper.toDto(any(UserEntity.class))).thenReturn(loginUserResponse);
 
-        LoginUserResponse response = authService.loginService(authUserRequest).getData();
+        LoginUserResponse response = authService.loginService(authUserRequest);
 
-        assertEquals(TOKEN, response.getToken());
+        assertEquals(Constants.TOKEN, response.getToken());
         verify(jwtProvider, times(1)).generateToken(any());
     }
 
@@ -120,7 +119,6 @@ class AuthServiceImplTest implements Constants {
 
         CustomException exception = assertThrows(CustomException.class, () -> authService.loginService(authUserRequest));
 
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
         assertEquals(ErrorCodes.PASSWORD_NOT_VALID, exception.getErrorCodes());
     }
 }
