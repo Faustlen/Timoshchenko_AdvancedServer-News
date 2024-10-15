@@ -2,19 +2,18 @@ package ibs.news.controller;
 
 import ibs.news.constrants.ValidationConstants;
 import ibs.news.dto.request.CreateNewsRequest;
-import ibs.news.dto.response.CreateNewsSuccessResponse;
 import ibs.news.dto.response.GetNewsOutResponse;
 import ibs.news.dto.response.common.BaseSuccessResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
 import ibs.news.dto.response.common.PageableResponse;
-import ibs.news.service.impl.NewsServiceImpl;
+import ibs.news.service.NewsService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,76 +23,75 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("v1/news")
+@RequestMapping("news")
 @Validated
 public class NewsController {
-
-    private final NewsServiceImpl newsService;
+    private final NewsService newsService;
 
     @PostMapping
-    public CreateNewsSuccessResponse createNews(@RequestBody @Valid CreateNewsRequest dto) {
-
-        return newsService.createNewsService(dto);
+    public ResponseEntity<CustomSuccessResponse<Long>> createNews(@RequestBody @Valid CreateNewsRequest dto) {
+        return ResponseEntity.ok(new CustomSuccessResponse<>(newsService.createNewsService(dto).getId()));
     }
 
     @GetMapping
-    public CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> getNews(@Valid NewsRequest newsRequest) {
-
-        return newsService.getNewsService(newsRequest.getPage() - 1, newsRequest.getPerPage());
+    public ResponseEntity<CustomSuccessResponse<PageableResponse<GetNewsOutResponse>>> getNews(
+            @NotNull(message = ValidationConstants.PARAM_PAGE_NOT_NULL)
+            @Positive(message = ValidationConstants.TASKS_PAGE_GREATER_OR_EQUAL_1)
+            Integer page,
+            @NotNull(message = ValidationConstants.PARAM_PER_PAGE_NOT_NULL)
+            @Max(value = 100, message = ValidationConstants.TASKS_PER_PAGE_LESS_OR_EQUAL_100)
+            @Positive(message = ValidationConstants.TASKS_PER_PAGE_GREATER_OR_EQUAL_1)
+            Integer perPage) {
+        return ResponseEntity.ok(newsService.getPageableNewsService(page - 1, perPage));
     }
 
-    @GetMapping("/user/{userId}")
-    public CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> getUserNews(
+    @GetMapping("user/{userId}")
+    public ResponseEntity<CustomSuccessResponse<PageableResponse<GetNewsOutResponse>>> getUserNews(
             @PathVariable @UUID(message = ValidationConstants.MAX_UPLOAD_SIZE_EXCEEDED) String userId,
-            @Valid NewsRequest newsRequest) {
-
-        return newsService.getUserNewsService(userId, newsRequest.getPage() - 1, newsRequest.getPerPage());
+            @NotNull(message = ValidationConstants.PARAM_PAGE_NOT_NULL)
+            @Positive(message = ValidationConstants.TASKS_PAGE_GREATER_OR_EQUAL_1)
+            Integer page,
+            @NotNull(message = ValidationConstants.PARAM_PER_PAGE_NOT_NULL)
+            @Max(value = 100, message = ValidationConstants.TASKS_PER_PAGE_LESS_OR_EQUAL_100)
+            @Positive(message = ValidationConstants.TASKS_PER_PAGE_GREATER_OR_EQUAL_1)
+            Integer perPage) {
+        return ResponseEntity.ok(newsService.getUserNewsService(userId, page - 1, perPage));
     }
 
-    @GetMapping("/find")
-    public CustomSuccessResponse<PageableResponse<List<GetNewsOutResponse>>> findNews(@Valid NewsRequest newsRequest) {
-
-        return newsService.findNewsService(newsRequest.getPage() - 1, newsRequest.getPerPage(),
-                newsRequest.getAuthor(), newsRequest.getKeywords(), newsRequest.getTags());
+    @GetMapping("find")
+    public ResponseEntity<CustomSuccessResponse<PageableResponse<GetNewsOutResponse>>> findNews(
+            @NotNull(message = ValidationConstants.PARAM_PAGE_NOT_NULL)
+            @Positive(message = ValidationConstants.TASKS_PAGE_GREATER_OR_EQUAL_1)
+            Integer page,
+            @NotNull(message = ValidationConstants.PARAM_PER_PAGE_NOT_NULL)
+            @Max(value = 100, message = ValidationConstants.TASKS_PER_PAGE_LESS_OR_EQUAL_100)
+            @Positive(message = ValidationConstants.TASKS_PER_PAGE_GREATER_OR_EQUAL_1)
+            Integer perPage,
+            Optional<String> author,
+            Optional<String> keywords,
+            Optional<Set<String>> tags) {
+        return ResponseEntity.ok(newsService.findNewsService(page - 1, perPage, author, keywords, tags));
     }
 
-    @PutMapping("/{newsId}")
-    public BaseSuccessResponse putNews(
-            @PathVariable @Positive(message = ValidationConstants.ID_MUST_BE_POSITIVE) Long newsId,
-            @RequestBody @Valid CreateNewsRequest dto) {
-
-        return newsService.putNewsService(newsId, dto);
+    @PutMapping("{newsId}")
+    public ResponseEntity<BaseSuccessResponse> putNews(
+            @PathVariable
+            @Positive(message = ValidationConstants.ID_MUST_BE_POSITIVE)
+            Long newsId,
+            @RequestBody
+            @Valid
+            CreateNewsRequest dto) {
+        return ResponseEntity.ok(newsService.putNewsService(newsId, dto));
     }
 
-    @DeleteMapping("/{newsId}")
-    public BaseSuccessResponse deleteNews(
+    @DeleteMapping("{newsId}")
+    public ResponseEntity<BaseSuccessResponse> deleteNews(
             @PathVariable @Positive(message = ValidationConstants.ID_MUST_BE_POSITIVE) Long newsId) {
-
-        return newsService.deleteNewsService(newsId);
-    }
-
-    @Data
-    public static class NewsRequest {
-
-        @NotNull(message = ValidationConstants.PARAM_PAGE_NOT_NULL)
-        @Positive(message = ValidationConstants.TASKS_PAGE_GREATER_OR_EQUAL_1)
-        private Integer page;
-
-        @NotNull(message = ValidationConstants.PARAM_PER_PAGE_NOT_NULL)
-        @Max(value = 100, message = ValidationConstants.TASKS_PER_PAGE_LESS_OR_EQUAL_100)
-        @Positive(message = ValidationConstants.TASKS_PER_PAGE_GREATER_OR_EQUAL_1)
-        private Integer perPage;
-
-        private String author;
-
-        private String keywords;
-
-        private Set<String> tags;
+        return ResponseEntity.ok(newsService.deleteNewsService(newsId));
     }
 }

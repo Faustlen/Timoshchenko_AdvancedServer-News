@@ -1,7 +1,7 @@
 package ibs.news.service.impl;
 
 import ibs.news.dto.request.UserNewDataRequest;
-import ibs.news.dto.response.PublicUserView;
+import ibs.news.dto.response.PublicUserResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
 import ibs.news.entity.UserEntity;
 import ibs.news.error.CustomException;
@@ -11,58 +11,58 @@ import ibs.news.repository.UserRepository;
 import ibs.news.security.UserEntityDetails;
 import ibs.news.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final UserMapper userMapper;
 
     private final UserRepository userRepo;
 
     @Override
-    public CustomSuccessResponse<List<PublicUserView>> getAllUsersService() {
+    public CustomSuccessResponse<List<PublicUserResponse>> getAllUsersService() {
 
-        List<PublicUserView> users = userMapper.toListViewDto(userRepo.findAll());
+        List<PublicUserResponse> users = userMapper.toListViewDto(userRepo.findAll());
 
         return new CustomSuccessResponse<>(users);
     }
 
     @Override
-    public CustomSuccessResponse<PublicUserView> getUserInfoService() {
-
+    public CustomSuccessResponse<PublicUserResponse> getUserInfoService() {
         UserEntity user = getAuthorizedUser();
 
-        PublicUserView response = userMapper.toViewDto(user);
+        PublicUserResponse response = userMapper.toViewDto(user);
 
         return new CustomSuccessResponse<>(response);
     }
 
     @Override
-    public CustomSuccessResponse<PublicUserView> getUserInfoByIdService(String idStr) {
-
+    public CustomSuccessResponse<PublicUserResponse> getUserInfoByIdService(String idStr) {
         UUID id = UUID.fromString(idStr);
 
         UserEntity user = userRepo.findById(id).orElseThrow(
-                () -> new CustomException(ErrorCodes.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
-        PublicUserView response = userMapper.toViewDto(user);
+                () -> new CustomException(ErrorCodes.USER_NOT_FOUND));
+        PublicUserResponse response = userMapper.toViewDto(user);
 
         return new CustomSuccessResponse<>(response);
     }
 
     @Override
-    public CustomSuccessResponse<PublicUserView> replaceUserService(UserNewDataRequest dto) {
+    @Transactional
+    public CustomSuccessResponse<PublicUserResponse> replaceUserService(UserNewDataRequest dto) {
+        UserEntity user = getAuthorizedUser();
 
-        if (userRepo.existsByEmail(dto.getEmail())) {
-            throw new CustomException(ErrorCodes.USER_WITH_THIS_EMAIL_ALREADY_EXIST, HttpStatus.BAD_REQUEST);
+        Optional<UserEntity> existingUser = userRepo.findByEmail(dto.getEmail());
+        if (existingUser.isPresent() && !existingUser.get().getEmail().equals(user.getEmail())) {
+            throw new CustomException(ErrorCodes.USER_WITH_THIS_EMAIL_ALREADY_EXIST);
         }
 
-        UserEntity user = getAuthorizedUser();
         user = userMapper.toEntity(dto, user);
         user = userRepo.save(user);
 
@@ -70,15 +70,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUserService() {
-
-        var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        userRepo.deleteById(userDetails.getId());
+        userRepo.deleteById(getAuthorizedUser().getId());
     }
 
-    private UserEntity getAuthorizedUser() {
-        var userDetails = (UserEntityDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    @Override
+    public UserEntity getAuthorizedUser() {
+        UserEntityDetails userDetails = (UserEntityDetails) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
         return userDetails.getUserEntity();
     }
 }

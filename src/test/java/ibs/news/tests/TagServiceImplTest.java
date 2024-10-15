@@ -18,7 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class TagServiceImplTest implements Constants {
+public class TagServiceImplTest {
 
     @Mock
     private TagRepository tagRepository;
@@ -26,12 +26,12 @@ public class TagServiceImplTest implements Constants {
     @InjectMocks
     private TagServiceImpl tagService;
 
-    Set<String> tagsTitles;
+    private Set<String> tagsTitles;
 
     @BeforeEach
     void SetUp() {
         MockitoAnnotations.openMocks(this);
-        tagsTitles = createTagsTitles();
+        tagsTitles = Constants.createTagsTitles();
     }
 
     @Test
@@ -47,7 +47,7 @@ public class TagServiceImplTest implements Constants {
     @Test
     void createTagsShouldReturnExistingTagsWhenTagsExist() {
         Set<TagEntity> existingTags = new HashSet<>();
-        existingTags.add(new TagEntity(TAG));
+        existingTags.add(new TagEntity(Constants.TAG));
 
         when(tagRepository.findTags(tagsTitles)).thenReturn(existingTags);
 
@@ -60,8 +60,8 @@ public class TagServiceImplTest implements Constants {
     @Test
     void createTags_ShouldNotSaveAnyTags_WhenAllTagsExist() {
         Set<TagEntity> existingTags = new HashSet<>();
-        existingTags.add(new TagEntity(TAG));
-        existingTags.add(new TagEntity(ANOTHER_TAG));
+        existingTags.add(new TagEntity(Constants.TAG));
+        existingTags.add(new TagEntity(Constants.ANOTHER_TAG));
 
         when(tagRepository.findTags(tagsTitles)).thenReturn(existingTags);
 

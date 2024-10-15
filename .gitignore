@@ -17,6 +17,6 @@ build/
 *.iml
 *.ipr
 
-application-*.properties
+application*.properties
 
 src/main/resources/files

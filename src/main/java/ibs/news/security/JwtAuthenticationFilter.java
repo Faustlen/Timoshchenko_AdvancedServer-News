@@ -1,5 +1,6 @@
 package ibs.news.security;
 
+import ibs.news.constrants.JwtConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,10 +24,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String authorizationHeader = request.getHeader("Authorization");
+            String authorizationHeader = request.getHeader(JwtConstants.AUTHORIZATION_HEADER);
 
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                String token = authorizationHeader.substring(7);
+            if (authorizationHeader != null && authorizationHeader.startsWith(JwtConstants.TOKEN_PREFIX)) {
+                String token = authorizationHeader.substring(JwtConstants.TOKEN_PREFIX_LENGTH);
 
                 if (jwtProvider.validateToken(token)) {
                     String email = jwtProvider.getEmailFromToken(token);

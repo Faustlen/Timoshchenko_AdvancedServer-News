@@ -5,13 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import java.util.Set;
 
 @Getter
 @AllArgsConstructor
 public class CreateNewsRequest {
-
     @NotBlank(message = ValidationConstants.NEWS_TITLE_NOT_NULL)
     @Size(min = 3, max = 160, message = ValidationConstants.NEWS_TITLE_SIZE)
     private String title;
