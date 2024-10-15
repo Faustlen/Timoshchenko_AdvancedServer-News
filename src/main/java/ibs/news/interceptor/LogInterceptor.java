@@ -1,6 +1,6 @@
 package ibs.news.interceptor;
 
-import ibs.news.constrants.ValidationConstants;
+import ibs.news.constrants.MessageConstants;
 import ibs.news.entity.LogEntity;
 import ibs.news.entity.UserEntity;
 import ibs.news.repository.LogRepository;
@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -24,22 +25,26 @@ public class LogInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
                                 Object handler, Exception ex) {
         String exception;
-        if (!response.getHeaders(ValidationConstants.ERROR_MESSAGE).isEmpty()) {
-            exception = response.getHeaders(ValidationConstants.ERROR_MESSAGE).toString();
+        if (!response.getHeaders(MessageConstants.ERROR_MESSAGE).isEmpty()) {
+            exception = response.getHeaders(MessageConstants.ERROR_MESSAGE).toString();
         } else {
-            exception = ValidationConstants.NO_ERRORS;
+            exception = MessageConstants.NO_ERRORS;
         }
 
-        LogEntity log;
+        Optional<UserEntity> optionalUserEntity = Optional.ofNullable(userService.getAuthorizedUser());
 
-        UserEntity userEntity = userService.getAuthorizedUser();
-        if (userEntity != null) {
-            log = new LogEntity(response.getStatus(), exception, request.getMethod(),
-                    request.getRequestURI(), userEntity.getId().toString());
-        } else {
-            log = new LogEntity(response.getStatus(), exception, request.getMethod(),
-                    request.getRequestURI(), ANON);
-        }
+        String userId = optionalUserEntity
+                .map(user -> user.getId().toString())
+                .orElse(ANON);
+
+        LogEntity log = new LogEntity(
+                null,
+                response.getStatus(),
+                exception,
+                request.getMethod(),
+                request.getRequestURI(),
+                userId
+        );
 
         logRepo.save(log);
     }

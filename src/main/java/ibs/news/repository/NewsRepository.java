@@ -32,7 +32,8 @@ public interface NewsRepository extends JpaRepository<NewsEntity, Long> {
             "WHERE (:author IS NULL OR u.name LIKE %:author%) " +
             "AND (COALESCE(:tagSet, NULL) IS NULL OR t.title IN :tagSet) " +
             "AND (:keyword IS NULL OR (n.title LIKE %:keyword% OR n.description LIKE %:keyword%))")
-    Page<NewsEntity> findNews(Pageable pageable, String author, String keyword, Set<String> tagSet);
+    Page<NewsEntity> findNews(Pageable pageable, Optional<String> author,
+                              Optional<String> keyword, Optional<Set<String>> tagSet);
 
     @Transactional
     void deleteByAuthorId(UUID userId);

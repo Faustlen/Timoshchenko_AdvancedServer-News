@@ -1,9 +1,9 @@
 package ibs.news.controller;
 
 import ibs.news.dto.response.common.CustomSuccessResponse;
-import ibs.news.error.CustomException;
-import ibs.news.error.ErrorCodes;
 import ibs.news.service.FileService;
+import jakarta.validation.Valid;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -22,19 +22,18 @@ import java.io.File;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.version}/file")
+@RequestMapping("file")
 @Validated
 public class FileController {
     private final FileService fileService;
 
     @PostMapping("uploadFile")
-    public CustomSuccessResponse<String> uploadFile(
-            @RequestParam(value = "file", required = false) MultipartFile file) {
-        if (file == null) {
-            throw new CustomException(ErrorCodes.UNKNOWN);
-        }
-
-        return new CustomSuccessResponse<>(fileService.uploadFileService(file));
+    public ResponseEntity<CustomSuccessResponse<String>> uploadFile(
+            @RequestParam(value = "file", required = false)
+            @NonNull
+            @Valid
+            MultipartFile file) {
+        return ResponseEntity.ok(new CustomSuccessResponse<>(fileService.uploadFileService(file)));
     }
 
     @GetMapping("{fileName}")

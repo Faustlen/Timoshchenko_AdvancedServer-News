@@ -32,14 +32,12 @@ public class FileServiceImplTest {
     @InjectMocks
     private FileServiceImpl fileService;
 
-    private final String tempShelter = "/src/test/java/ibs/news/files/";
-
     @BeforeEach
     void SetUp() {
         MockitoAnnotations.openMocks(this);
 
         fileService = new FileServiceImpl();
-        fileService.setShelter(tempShelter);
+        fileService.setShelter(Constants.TEMP_SHELTER);
     }
 
     @Test
@@ -52,13 +50,13 @@ public class FileServiceImplTest {
             ServletUriComponentsBuilder builderMock = mock(ServletUriComponentsBuilder.class);
 
             mockedBuilder.when(ServletUriComponentsBuilder::fromCurrentContextPath).thenReturn(builderMock);
-            when(builderMock.path("/v1/file/")).thenReturn(builderMock);
             when(builderMock.path(anyString())).thenReturn(builderMock);
-            when(builderMock.toUriString()).thenReturn("http://localhost:8080/v1/file/" + Constants.FILE);
+            when(builderMock.path(anyString())).thenReturn(builderMock);
+            when(builderMock.toUriString()).thenReturn(Constants.DOWNLOAD_URL + Constants.FILE);
 
             var response = fileService.uploadFileService(multipartFile);
 
-            assertEquals("http://localhost:8080/v1/file/" + Constants.FILE, response);
+            assertEquals(Constants.DOWNLOAD_URL + Constants.FILE, response);
 
             deleteFiles();
         }
@@ -77,14 +75,14 @@ public class FileServiceImplTest {
 
     @Test
     void getFileServiceShouldReturnFileWhenFileExists() {
-        String tempDir = System.getProperty("user.dir") + tempShelter;
+        String tempDir = System.getProperty("user.dir") + Constants.TEMP_SHELTER;
         File testFile = new File(tempDir, Constants.FILE);
         File testDir = new File(tempDir);
         if (!testDir.exists()) {
             testDir.mkdirs();
         }
         try (FileWriter writer = new FileWriter(testFile)) {
-            writer.write("This is a test file.");
+            writer.write(Constants.DESCRIPTION);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -98,7 +96,6 @@ public class FileServiceImplTest {
 
     @Test
     void getFileServiceShouldThrowExceptionWhenFileNotFound() {
-
         CustomException exception = assertThrows(CustomException.class, () ->
                 fileService.getFileService(Constants.FILE));
 
@@ -106,7 +103,7 @@ public class FileServiceImplTest {
     }
 
     private void deleteFiles() {
-        Path directoryPath = Path.of(System.getProperty("user.dir") + tempShelter);
+        Path directoryPath = Path.of(System.getProperty("user.dir") + Constants.TEMP_SHELTER);
 
         try {
             if (Files.isDirectory(directoryPath)) {
@@ -118,7 +115,6 @@ public class FileServiceImplTest {
             }
             Files.delete(directoryPath);
         } catch (IOException e) {
-            System.err.println("Ошибка при удалении файлов: " + e.getMessage());
         }
     }
 }

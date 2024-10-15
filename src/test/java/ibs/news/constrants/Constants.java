@@ -2,7 +2,6 @@ package ibs.news.constrants;
 
 import ibs.news.dto.request.AuthUserRequest;
 import ibs.news.dto.request.CreateNewsRequest;
-import ibs.news.dto.request.NewsRequest;
 import ibs.news.dto.request.RegisterUserRequest;
 import ibs.news.dto.request.UserNewDataRequest;
 import ibs.news.dto.response.LoginUserResponse;
@@ -18,7 +17,6 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 
 public class Constants {
-
     public static final UUID USER_UUID = UUID.randomUUID();
     public static final Long NEWS_ID = Long.valueOf(randomNumeric(3));
     public static final String TITLE = randomAlphanumeric(3, 25);
@@ -34,6 +32,8 @@ public class Constants {
     public static final String AVATAR = randomAlphanumeric(3, 25);
     public static final String TOKEN = randomAlphanumeric(30);
     public static final String FILE = randomAlphanumeric(3,25) + ".txt";
+    public static final String TEMP_SHELTER = "/src/test/java/ibs/news/files/";
+    public static final String DOWNLOAD_URL = "http://localhost:8080/api/v1/file/";
 
     public static UserEntity createUserEntity() {
         UserEntity userEntity = new UserEntity();
@@ -103,16 +103,5 @@ public class Constants {
         tags.add(ANOTHER_TAG);
 
         return tags;
-    }
-
-    public static NewsRequest createNewsRequest() {
-        NewsRequest newsRequest = new NewsRequest();
-        newsRequest.setPage(1);
-        newsRequest.setPerPage(10);
-        newsRequest.setAuthor(NAME);
-        newsRequest.setKeywords(TITLE);
-        newsRequest.setTags(Set.of(TAG));
-
-        return newsRequest;
     }
 }

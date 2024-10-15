@@ -1,5 +1,6 @@
 package ibs.news.security;
 
+import ibs.news.constrants.JwtConstants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -19,8 +20,7 @@ public class JwtProvider {
     private Long validityInMilliseconds;
 
     public String generateToken(String mail) {
-
-        return "Bearer " + Jwts.builder()
+        return JwtConstants.TOKEN_PREFIX + Jwts.builder()
                 .subject(mail)
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + validityInMilliseconds))

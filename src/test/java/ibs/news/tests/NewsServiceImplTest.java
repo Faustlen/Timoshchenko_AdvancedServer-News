@@ -2,12 +2,9 @@ package ibs.news.tests;
 
 import ibs.news.constrants.Constants;
 import ibs.news.dto.request.CreateNewsRequest;
-import ibs.news.dto.request.NewsRequest;
 import ibs.news.dto.response.GetNewsOutResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
-import ibs.news.dto.response.common.PageableResponse;
 import ibs.news.entity.NewsEntity;
-import ibs.news.entity.TagEntity;
 import ibs.news.entity.UserEntity;
 import ibs.news.error.CustomException;
 import ibs.news.error.ErrorCodes;
@@ -40,7 +37,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -69,7 +65,6 @@ public class NewsServiceImplTest {
 
     private CreateNewsRequest createNewsRequest;
     private NewsEntity newsEntity;
-    private NewsRequest newsRequest;
 
     @BeforeEach
     void SetUp() {
@@ -78,7 +73,6 @@ public class NewsServiceImplTest {
         userEntityDetails = new UserEntityDetails(Constants.createUserEntity());
         createNewsRequest = Constants.createCreateNewsRequest();
         newsEntity = Constants.createNewsEntity();
-        newsRequest = Constants.createNewsRequest();
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userEntityDetails);
@@ -134,16 +128,21 @@ public class NewsServiceImplTest {
     @Test
     void findNewsServiceShouldReturnPagedNews() {
         Page<NewsEntity> pagedNews = new PageImpl<>(List.of(newsEntity));
-        when(newsRepository.findNews(any(PageRequest.class), anyString(), anyString(), anySet())).thenReturn(pagedNews);
+        when(newsRepository.findNews(any(PageRequest.class), any(), any(), any())).thenReturn(pagedNews);
         when(newsMapper.toDto(anyList())).thenReturn(List.of(new GetNewsOutResponse()));
 
         var response = newsService.findNewsService(
-                newsRequest).getData();
+                        1,
+                        10,
+                        Optional.of(Constants.NAME),
+                        Optional.of(Constants.TITLE),
+                        Optional.of(Set.of(Constants.TAG)))
+                .getData();
 
         assertNotNull(response);
         assertEquals(1, response.getContent().size());
         verify(newsRepository, times(1)).findNews(
-                any(PageRequest.class),anyString(), anyString(), anySet());
+                any(PageRequest.class), any(), any(), any());
         verify(newsMapper, times(1)).toDto(anyList());
     }
 

@@ -1,7 +1,6 @@
 package ibs.news.service.impl;
 
 import ibs.news.dto.request.CreateNewsRequest;
-import ibs.news.dto.request.NewsRequest;
 import ibs.news.dto.response.GetNewsOutResponse;
 import ibs.news.dto.response.common.BaseSuccessResponse;
 import ibs.news.dto.response.common.CustomSuccessResponse;
@@ -22,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -75,10 +75,12 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public CustomSuccessResponse<PageableResponse<GetNewsOutResponse>> findNewsService(NewsRequest newsRequest) {
+    public CustomSuccessResponse<PageableResponse<GetNewsOutResponse>> findNewsService(
+            Integer page, Integer perPage, Optional<String> author,
+            Optional<String> keywords, Optional<Set<String>> tags) {
         Page<NewsEntity> pagedNews;
-        pagedNews = newsRepo.findNews(PageRequest.of(newsRequest.getPage() - 1, newsRequest.getPerPage()),
-                newsRequest.getAuthor(), newsRequest.getKeywords(), newsRequest.getTags());
+        pagedNews = newsRepo.findNews(PageRequest.of(page, perPage),
+                author, keywords, tags);
 
         List<GetNewsOutResponse> newsList = newsMapper.toDto(pagedNews.getContent());
 

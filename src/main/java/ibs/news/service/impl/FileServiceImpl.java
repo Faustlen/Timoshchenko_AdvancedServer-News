@@ -1,5 +1,6 @@
 package ibs.news.service.impl;
 
+import ibs.news.constrants.FileConstants;
 import ibs.news.error.CustomException;
 import ibs.news.error.ErrorCodes;
 import ibs.news.service.FileService;
@@ -20,12 +21,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Setter
 public class FileServiceImpl implements FileService {
-    private static final String DOT = ".";
-
-    private static final String SLASH = "/";
-
-    private static final String PATH = "/v1/file/";
-
     @Value("${files.shelter.path}")
     private String shelter;
 
@@ -39,12 +34,13 @@ public class FileServiceImpl implements FileService {
         try {
             String uniqueFileName = UUID.randomUUID().toString();
             String originalFilename = file.getOriginalFilename();
-            if (originalFilename != null && originalFilename.contains(DOT)) {
-                uniqueFileName += DOT + originalFilename.substring(originalFilename.lastIndexOf(DOT) + 1);
+            if (originalFilename != null && originalFilename.contains(FileConstants.DOT)) {
+                uniqueFileName += FileConstants.DOT + originalFilename.substring(
+                        originalFilename.lastIndexOf(FileConstants.DOT) + 1);
             }
 
             Path fileStorageLocation = Path.of(System.getProperty("user.dir") + shelter);
-            File destinationFile = new File(fileStorageLocation + SLASH + uniqueFileName);
+            File destinationFile = new File(fileStorageLocation + FileConstants.SLASH + uniqueFileName);
 
             if (!Files.exists(fileStorageLocation)) {
                 Files.createDirectories(fileStorageLocation);
@@ -52,7 +48,7 @@ public class FileServiceImpl implements FileService {
 
             file.transferTo(destinationFile);
             return ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path(PATH)
+                    .path(FileConstants.URI)
                     .path(uniqueFileName)
                     .toUriString();
         } catch (IOException e) {

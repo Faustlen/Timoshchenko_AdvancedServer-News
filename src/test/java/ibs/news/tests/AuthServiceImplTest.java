@@ -67,7 +67,6 @@ class AuthServiceImplTest{
 
     @Test
     void registerServiceShouldRegisterNewUser() {
-
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
         when(passwordEncoder.encode(anyString())).thenReturn(Constants.PASSWORD);
@@ -85,7 +84,6 @@ class AuthServiceImplTest{
 
     @Test
     void registerServiceShouldThrowExceptionWhenUserAlreadyExists() {
-
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(userEntity));
 
         CustomException exception = assertThrows(CustomException.class, () ->
@@ -97,7 +95,6 @@ class AuthServiceImplTest{
 
     @Test
     void loginServiceShouldReturnTokenWhenCredentialsAreValid() {
-
         when(userDetailsService.loadUserByUsername(anyString())).thenReturn(new UserEntityDetails(userEntity));
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(userEntity));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
@@ -112,7 +109,6 @@ class AuthServiceImplTest{
 
     @Test
     void loginServiceShouldThrowExceptionWhenCredentialsAreInvalid() {
-
         when(userDetailsService.loadUserByUsername(anyString())).thenReturn(new UserEntityDetails(userEntity));
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(userEntity));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);

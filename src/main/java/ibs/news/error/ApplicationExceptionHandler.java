@@ -1,5 +1,6 @@
 package ibs.news.error;
 
+import ibs.news.constrants.MessageConstants;
 import ibs.news.constrants.ValidationConstants;
 import ibs.news.dto.response.common.CustomSuccessResponse;
 import ibs.news.interceptor.LogInterceptor;
@@ -36,7 +37,7 @@ public class ApplicationExceptionHandler {
                 .toList();
 
         return ResponseEntity.badRequest()
-                .headers(httpHeaders -> httpHeaders.addAll(ValidationConstants.ERROR_MESSAGE, errorMessages))
+                .headers(httpHeaders -> httpHeaders.addAll(MessageConstants.ERROR_MESSAGE, errorMessages))
                 .body(new CustomSuccessResponse<>(errorCodes.getFirst(), errorCodes));
     }
 
@@ -54,7 +55,7 @@ public class ApplicationExceptionHandler {
                 .toList();
 
         return ResponseEntity.badRequest()
-                .headers(httpHeaders -> httpHeaders.addAll(ValidationConstants.ERROR_MESSAGE, errorMessages))
+                .headers(httpHeaders -> httpHeaders.addAll(MessageConstants.ERROR_MESSAGE, errorMessages))
                 .body(new CustomSuccessResponse<>(errorCodes.getFirst(), errorCodes));
     }
 
@@ -68,7 +69,7 @@ public class ApplicationExceptionHandler {
         errorMessages.add(ValidationConstants.HTTP_MESSAGE_NOT_READABLE_EXCEPTION);
 
         return ResponseEntity.badRequest()
-                .headers(httpHeaders -> httpHeaders.addAll(ValidationConstants.ERROR_MESSAGE, errorMessages))
+                .headers(httpHeaders -> httpHeaders.addAll(MessageConstants.ERROR_MESSAGE, errorMessages))
                 .body(new CustomSuccessResponse<>(errorCodes.getFirst(), errorCodes));
     }
 
@@ -81,7 +82,7 @@ public class ApplicationExceptionHandler {
         errorMessages.add(ValidationConstants.UNKNOWN);
 
         return ResponseEntity.badRequest()
-                .headers(httpHeaders -> httpHeaders.addAll(ValidationConstants.ERROR_MESSAGE, errorMessages))
+                .headers(httpHeaders -> httpHeaders.addAll(MessageConstants.ERROR_MESSAGE, errorMessages))
                 .body(new CustomSuccessResponse<>(errorCodes.getFirst(), errorCodes));
     }
 
@@ -95,7 +96,7 @@ public class ApplicationExceptionHandler {
         errorMessages.add(e.getErrorCodes().getErrorMessage());
 
         return ResponseEntity.badRequest()
-                .headers(httpHeaders -> httpHeaders.addAll(ValidationConstants.ERROR_MESSAGE, errorMessages))
+                .headers(httpHeaders -> httpHeaders.addAll(MessageConstants.ERROR_MESSAGE, errorMessages))
                 .body(new CustomSuccessResponse<>(errorCodes.getFirst(), errorCodes));
     }
 }

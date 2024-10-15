@@ -8,8 +8,10 @@ import ibs.news.error.CustomException;
 import ibs.news.error.ErrorCodes;
 import ibs.news.mapper.UserMapper;
 import ibs.news.repository.UserRepository;
+import ibs.news.security.UserEntityDetails;
 import ibs.news.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -71,5 +73,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUserService() {
         userRepo.deleteById(getAuthorizedUser().getId());
+    }
+
+    @Override
+    public UserEntity getAuthorizedUser() {
+        UserEntityDetails userDetails = (UserEntityDetails) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        return userDetails.getUserEntity();
     }
 }

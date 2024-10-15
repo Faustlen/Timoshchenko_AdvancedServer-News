@@ -94,8 +94,4 @@ public interface ValidationConstants {
     String HTTP_MESSAGE_NOT_READABLE_EXCEPTION = "Http request not valid";
 
     String UNAUTHORISED = "unauthorised";
-
-    String ERROR_MESSAGE = "error message";
-
-    String NO_ERRORS = "no errors";
 }
